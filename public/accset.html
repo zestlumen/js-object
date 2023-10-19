@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>계정&설정-오브젝트</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/accset.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.css" integrity="sha512-1hsteeq9xTM5CX6NsXiJu3Y/g+tj+IIwtZMtTisemEv3hx+S9ngaW4nryrNcPM4xGzINcKbwUJtojslX2KG+DQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <!-- 파이어베이스연결 -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+
+    <!-- firestore 연결 -->
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyDUhVSDi48s2nP5ZXnYhL1VDkgPTXlYuXM",
+            authDomain: "type-object.firebaseapp.com",
+            projectId: "type-object",
+            storageBucket: "type-object.appspot.com",
+            messagingSenderId: "591050541996",
+            appId: "1:591050541996:web:cf747fc6eb0c64cf384809",
+            measurementId: "G-0ZSTMSPW1H"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+
+    </script>
+    <script>
+
+        window.onload = function(){
+
+            document.getElementById("span_userEmail").innerText = sessionStorage.getItem("userEmail");
+            document.getElementById('btn_chg_freepass').addEventListener("click",function(){
+                location.href="./chg_freepass.html";
+            })
+            // document.getElementById('btn_change_id').addEventListener("click",function(){
+            //     location.href="./chg_eml.html";
+            // })
+            
+            document.getElementById('a_logout').addEventListener("click",function(){
+                //로그아웃시 세션에 저장되어 있는 유저정보 삭제
+                sessionStorage.clear();
+                location.href="./index.html";
+            })
+        
+
+            var userPayment = sessionStorage.getItem("userPayment");
+
+            if ( "basic" == userPayment ){
+
+                document.getElementById("div_payContents1").innerText = "베이직 이용권";
+                document.getElementById("div_payContents2").innerText = "기본 HD 화질 제공, 1명 재생 가능";
+
+                document.getElementById("profile_li2").style.display = "none";
+                document.getElementById("profile_li3").style.display = "none";
+                document.getElementById("profile_li4").style.display = "none";
+            } else if ( "premium" == userPayment ){
+
+                document.getElementById("div_payContents1").innerText = "프리미엄 이용권";
+                document.getElementById("div_payContents2").innerText = "Ultra HD 4K 화질 제공, 4명 동시재생 가능";
+
+                document.getElementById("profile_li2").style.display = "block";
+                document.getElementById("profile_li3").style.display = "block";
+                document.getElementById("profile_li4").style.display = "block";
+            }
+            const userArr = sessionStorage.getItem('userProfile').split(",");
+
+            for ( var i = 0; i < userArr.length; i++ ){
+                document.getElementById('profile_name'+(i+1)).innerText = userArr[i];
+            } 
+        }
+
+
+        function changePwd(){
+            location.href="./chg_pwd.html";
+        }
+s
+        function mainMove(index){
+            sessionStorage.setItem("profileIndex", index );           
+            window.location.href = "main.html";
+
+        }
+
+    </script>
+</head>
+<body>
+    <form>
+        <div class="accset_body">
+            <div class="accset_container">
+                <h1 class="accset_header">계정 & 설정</h1>
+                <div class="accset_content">
+                    <header>
+                        <h2 class="accset_content_header">이용권 및 결제</h2>
+                    </header>
+                    <ul class="paynaccess">
+                        <li class="paynaccess_access">
+                            <span><b>상세정보</b></span>
+                            <div class="div_paynaccess_access_now">
+                                <div id="div_payContents1" ></div>
+                                <div id="div_payContents2" ></div>
+                            </div>
+                            <div>
+                                <input type="button" id="btn_chg_freepass" class="faicon" value="이용권변경 &#xf105;">
+                            </div>
+                        </li>
+                        <li class="paynaccess_pay">
+                            <span><b>결제수단</b></span>
+                            <span>신용카드</span>
+                            <span>**** **** **** 7114</span>
+                            <span><b>다음 결제일</b></span>
+                            <span>2022년 7월 20일 </span>
+                            <div>
+                                <div>
+                                    <input type="button" class="faicon" style = "color:black" value="결제 정보 변경 &#xf105;">
+                                </div>
+                                <div>
+                                    <input type="button" class="faicon" style = "color:black"  value="결제 내역 &#xf105;">
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="accset_content">
+                    <header>
+                        <h2 class="accset_content_header">프로필</h2>
+                    </header>
+                    <div class="accset_content1">
+                        <ul class="profile">
+                            <li id="profile_li1">
+                                <div class="profiledetail" onclick="mainMove(1)">
+                                    <img src="img/pro1.jpg">
+                                    <b id="profile_name1"></b>
+                                    <input type="button" class="faicon" value="&#xf105;">
+                                </div>
+                            </li>
+                            <li id="profile_li2">
+                                <div class="profiledetail" onclick="mainMove(2)">
+                                    <img src="img/pro2.jpg">
+                                    <b id="profile_name2"></b>
+                                    <input type="button" class="faicon" value="&#xf105;">
+                                </div>
+                            </li>
+                            <li id="profile_li3">
+                                <div class="profiledetail" onclick="mainMove(3)">
+                                    <img src="img/pro4.jpg">
+                                    <b id="profile_name3"></b>
+                                    <input type="button" class="faicon" value="&#xf105;">
+                                </div>
+                            </li>
+                            <li id="profile_li4">
+                                <div class="profiledetail" onclick="mainMove(4)">
+                                    <img src="img/pro3.jpg">
+                                    <b id="profile_name4"></b>
+                                    <input type="button" class="faicon" value="&#xf105;">
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="accset_content">
+                    <header>
+                        <h2 class="accset_content_header">계정</h2>
+                    </header>
+                    <div class="accset_content2">
+                        <ul>
+                            <li class="now_email">
+                                <span> 현재 이메일 </span>
+                                <span id="span_userEmail"> object@naver.com </span>
+                            </li>
+                            <!-- <li>
+                                <input type="button" class="faicon" id="btn_change_id" value="이메일 변경 &#xf105;">
+                            </li> -->
+                            <li>
+                                <input type="button" class="faicon" onclick="changePwd()" value="비밀번호 변경 &#xf105;">
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                    <div class="accset_content">
+                        <header>
+                            <h2 class="accset_content_header">설정</h2>
+                        </header>
+                        <div class="accset_content3">
+                            <ul>
+                                <li class="li_alert_set">
+                                    <span class="alert_set" id="span_btn_alert">알림설정</span>
+                                    <input type ="checkbox" id="alert_toggle" hidden>
+                                    <label for="alert_toggle" class="toggle_switch">
+                                        <span class="toggle_btn"></span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <a class="accset_link" href="./service_center.html">고객센터</a>
+                                </li>
+                                <li>
+                                    <a class="accset_link" id = "a_logout" >로그아웃</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </form>
+    
+</body>
+</html>

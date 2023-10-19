@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>마이픽-오브젝트</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/manager.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.css"
+        integrity="sha512-1hsteeq9xTM5CX6NsXiJu3Y/g+tj+IIwtZMtTisemEv3hx+S9ngaW4nryrNcPM4xGzINcKbwUJtojslX2KG+DQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- 파이어베이스연결 -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+
+    <!-- firestore 연결 -->
+    <script>
+        var firebaseConfig = {
+            apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+            authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+            projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+            storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+            messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+            appId: process.env.REACT_APP_APP_ID,
+            measurementId: process.env.REACT_APP_MEASUREMENT_ID,
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+
+    </script>
+</head>
+
+<body>
+    <div id="" class="manager_add">
+        <h2>영상 정보 추가</h2>
+        <label>대분류</label><input id="v_cate" class="v_cate" type="text">
+        <label>소분류</label><input id="v_cate2" class="v_cate2" type="text">
+        <label>상세화면 미리보기 링크</label><input id="v_preview" class="v_preview" type="text">
+        <label>고유번호</label><input id="v_key" class="v_key" type="text">
+        <label>타이틀</label><input id="v_title" class="v_title" type="text">
+        <label>개봉/방영년도</label><input id="v_release" class="v_release" ype="text">
+        <label>등급</label><input id="v_rating" class="v_rating" type="text">
+        <label>장르</label><input id="v_genre" class="v_genre" type="text">
+        <label>제작자</label><input id="v_director" class="v_director" type="text">
+        <label>출연진</label><input id="v_cast" class="v_cast" type="text">
+        <label>태그</label><input id="v_tag" class="v_tag" type="text">
+        <label>줄거리</label><input id="v_contents" class="v_contents" type="text">
+        <label>url</label><input id="v_url" class=type="v_url" text">
+        <label>대표이미지</label><input id="v_img" class="v_img" type="text">
+    </div>
+    <div>
+        <input type="button" value=추가>
+    </div>
+</body>
+
+</html>

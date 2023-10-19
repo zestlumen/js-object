@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>이메일 변경-오브젝트</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/chg_emlpwd.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.css"
+        integrity="sha512-1hsteeq9xTM5CX6NsXiJu3Y/g+tj+IIwtZMtTisemEv3hx+S9ngaW4nryrNcPM4xGzINcKbwUJtojslX2KG+DQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- 파이어베이스연결 -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+
+    <!-- firestore 연결 -->
+    <script>
+        var firebaseConfig = {
+            apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+            authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+            projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+            storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+            messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+            appId: process.env.REACT_APP_APP_ID,
+            measurementId: process.env.REACT_APP_MEASUREMENT_ID,
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+
+    </script>
+</head>
+
+<body>
+    <form>
+        <div class="div_chgemlpwd">
+            <h1>이메일변경</h1>
+            <div>계정 이메일은 모든 프로필에 로그인하고 이메일을 발송하는데 사용됩니다.</div>
+            <div class="nowemail">
+                <span>현재 이메일</span>
+                <input type="email" disabled value="object@naver.com" />
+            </div>
+            <div class="chgemlpwd_box">
+                <input type="email" required>
+                <label>새 이메일</label>
+            </div>
+            <div class="chgemlpwd_box">
+                <input type="password" required>
+                <label>비밀번호</label>
+            </div>
+            <div class="div_chgemlpwd_btn">
+                <input type="button" value="취소하기">
+                <input type="button" value="저장하기">
+            </div>
+        </div>
+    </form>
+    <script src='js\main.js'></script>
+</body>
+
+</html>

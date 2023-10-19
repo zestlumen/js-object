@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<meta charset="UTF-8">
+			<title>search_text</title>
+		
+		<script>
+			var search_itmeCount=1;
+			var s_input_itmeCount=1;
+			var click_itmeCount=1;
+			var searchinp ;
+
+			var search_key;
+
+			var user_code="";
+			var user_search_Count = 1;
+
+			//이메일 가져오기/유저 번호 가져오기 구현
+			const email_Check = sessionStorage.getItem("userEmail");
+			var code_Check = "000";
+
+			//const db = firebase.firestore();
+			$(document).ready(function() {
+				const db = firebase.firestore();
+
+				//태그폼으로 바꾸기
+				$("#btn_search_tag").click( function() {
+					$("#search_frm").load("./search/search_tag.html");
+				});
+				
+				search_key = document.getElementById("search_text").value;
+				sessionStorage.setItem("key1", search_key);
+				
+				if(search_key != ""){
+					searchinp = sessionStorage.getItem("key1");
+					
+					$("#click_search").css("display","none");
+					$("#realtime_search").css("display","none");
+					$("#input_result").css("display","block");
+					$("#no_result").css("display","none");
+
+						
+					$('#search_input').attr('value',searchinp);
+					$("#search_result").text(searchinp + "의 검색결과");
+					
+
+					try{
+					let test_collection = db.collection('search_record').where("user_email", "==", email_Check);;
+					test_collection.get().then( (data)=>{
+						data.forEach((doc)=>{
+							var email_deta = doc.data().user_email;
+							var search_deta =  doc.data().user_search_list;
+							if ( email_Check === email_deta ){
+								//searchinp 배열에 추가 입력됨
+								if(search_deta.length > 9){
+									console.log(search_deta.length);
+									search_deta.shift();
+									search_deta.push(searchinp);
+
+									let ref = db.collection('search_record');
+									ref.doc(email_deta).update({user_search_list: search_deta});   
+
+								}else{
+									search_deta.push(searchinp);
+
+								let ref = db.collection('search_record');
+								ref.doc(email_deta).update({user_search_list: search_deta});   
+								}
+
+								// search_deta.push(searchinp);
+
+								// let ref = db.collection('search_record');
+								// ref.doc(email_deta).update({user_search_list: search_deta});   
+
+							}else{
+								test_collection.doc(email_Check).set({
+									user_email : email_Check ,
+									user_code : "" ,
+									user_search_list : [searchinp]
+								})
+							}
+							
+						
+						})
+					})
+					}catch{
+					}try{
+						//검색결과(메인 검색)
+						$("#search_result_lists").empty();
+						let collection_title = db.collection('videoList');
+						collection_title.get().then( (data)=>{
+
+							let input_collection = db.collection('videoList');
+							input_collection.get().then( (data)=>{
+								data.forEach((doc)=>{
+									inputAppend(doc.data().video_title, doc.data().video_img, doc.data().video_key);
+								})
+							})
+		
+							.then(() => {
+								var input_detail = document.querySelectorAll('.lately_search_list');     
+								
+								for(var i=0;i<input_detail.length;i++){ 
+									input_detail[i].addEventListener("click", function(){
+										videodetail=videodetail*-1;
+										dv(videodetail);
+									})
+								}  
+		
+							})
+							.catch((error) => {
+
+								console.error("Error writing document: ", error);
+							});
+						})
+						.then(() => {
+							
+						})
+						.catch((error) => {
+						});
+					} catch (error) {
+						console.error("Error writing document: ", error);
+					}
+					
+					
+				}else if(search_key == ""){
+					
+					//인기 검색어
+					if($("search_input") == click){
+						$("#input_result").css("display","none");
+						$("#click_search").css("display","none");
+						$("#realtime_search").css("display","block");
+						$("#no_result").css("display","none");
+
+					}else{
+						$("#search_result_lists").empty();
+						
+				
+						try{
+							//$("#search_result_lists").empty();
+							
+							let search_collection = db.collection("searchInfo").orderBy("search_count", "desc").limit(10);;
+						
+							search_collection.get().then( (data)=>{
+								data.forEach((doc)=>{
+									searchAppend(doc.data().video_title, doc.data().video_key);
+								})
+							})
+
+							.then(() => {
+								
+								var search_detail=document.querySelectorAll('.realtime_list');     
+							
+								for(var i=0 ; i<=search_detail.length ; i++){ 
+									search_detail[i].addEventListener("click", function(){
+										videodetail=videodetail*-1;
+										dv(videodetail)
+									;
+									})
+								$("#click_search").css("display","none");
+								$("#realtime_search").css("display","block");
+								$("#input_result").css("display","none");
+								$("#no_result").css("display","none");
+								}  
+							})
+							.catch((error) => {
+								console.error("Error writing document: ", error);
+							});
+						} catch (error) {
+							console.error(error);
+						}
+					// }
+
+					}
+				};
+
+			
+
+				$("#search_input").ready( function() {
+					//실시간 검색으로 이동
+					$("#search_input").change( function() {
+						console.log(text_update);
+						if(document.getElementById('search_input').value != ""){
+							$("#click_search").css("display","none");
+							$("#realtime_search").css("display","none");
+							$("#input_result").css("display","block");
+							$("#no_result").css("display","none");
+							
+							//입력시 업데이트됨
+							var text_update = document.getElementById('search_input').value;
+							$("#search_result").text(text_update + "의 검색결과");
+
+							try{
+							let test_collection = db.collection('search_record').where("user_email", "==", email_Check);;
+							test_collection.get().then( (data)=>{
+								data.forEach((doc)=>{
+									var email_deta = doc.data().user_email;
+									var search_deta =  doc.data().user_search_list;
+									if ( email_Check === email_deta ){
+										//searchinp 배열에 추가 입력됨
+									if(search_deta.length > 9){
+										search_deta.shift();
+										search_deta.push(text_update);
+
+										let ref = db.collection('search_record');
+										ref.doc(email_deta).update({user_search_list: search_deta});   
+
+									}else{
+										search_deta.push(text_update);
+
+									let ref = db.collection('search_record');
+									ref.doc(email_deta).update({user_search_list: search_deta});   
+									}
+ 
+
+									}else{
+										test_collection.doc(email_Check).set({
+											user_email : email_Check ,
+											user_code : "" ,
+											user_search_list : [text_update]
+										})
+									}
+									
+								
+								})
+							})
+							}catch{
+							}
+													
+							//검색결과
+							try{
+								$("#realtime_lists").empty();
+								console.log(text_update);
+								let input_collection = db.collection('videoList')
+
+								input_collection.get().then( (data)=>{
+									data.forEach((doc)=>{
+										inputAppend(doc.data().video_title,doc.data().video_img, doc.data().video_key);
+									})
+								})
+
+								.then(() => {
+									var input_detail=document.querySelectorAll('.lately_search_list');     
+									
+									for(var i=0;i<input_detail.length;i++){ 
+										input_detail[i].addEventListener("click", function(){
+											videodetail=videodetail*-1;
+											dv(videodetail);
+										})
+									}  
+								})
+								.catch((error) => {
+									console.error("Error writing document: ", error);
+								});
+							} catch (error) {
+								console.error(error);
+							}
+
+						}else{
+							$("#lately_search_lists").empty();
+
+							//실시간 인기 검색어에서 최근 검색어로
+							$("#realtime_search").css("display","none");
+							$("#input_result").css("display","none");
+							$("#click_search").css("display","block");
+
+							try{
+								let click_collection = db.collection("search_record").where("user_email", "==", email_Check);
+								//let click_collection = db.collection("search_record").where("user_code","==",code_Check);
+																							// && "user_code","==",code_Check
+								click_collection.get().then( (data)=>{
+									data.forEach((doc)=>{
+										clickAppend(doc.data().user_search_list); 
+									})
+								})
+								
+								.catch((error) => {
+									console.error("Error writing document: ", error);
+								});
+								
+							} catch (error) {
+								console.error(error);
+							
+							
+							}   
+						}
+					})
+				})
+			
+
+				
+				//리스트 li구성하기(인기)
+				function searchAppend(title, key){
+
+					var search_item = document.createElement('li');
+					search_item.id = "realtime_list"+search_itmeCount;
+					search_item.innerHTML = search_itmeCount + "위 : " + title;
+					search_item.className = "realtime_list";
+					search_item.onclick = function(){
+						videoData(key);
+					}
+					
+					if(search_itmeCount < 10){
+						search_itmeCount += 1;
+					}else{
+						search_itmeCount = 1;
+					}
+					document.getElementById("realtime_lists").append(search_item);
+				}
+				
+				
+
+				$("#search_input").click( function() {
+					$("#lately_search_lists").empty();
+
+					//실시간 인기 검색어에서 최근 검색어로
+					$("#realtime_search").css("display","none");
+					$("#input_result").css("display","none");
+					$("#click_search").css("display","block");
+
+					try{
+						let click_collection = db.collection("search_record").where("user_email", "==", email_Check);
+						//let click_collection = db.collection("search_record").where("user_code","==",code_Check);
+																					// && "user_code","==",code_Check
+						click_collection.get().then( (data)=>{
+							data.forEach((doc)=>{
+								clickAppend(doc.data().user_search_list);
+							})
+						})
+						
+						.catch((error) => {
+							console.error("Error writing document: ", error);
+						});
+						
+					} catch (error) {
+						console.error(error);
+					
+					
+					}   
+				})
+			
+
+				function clickAppend(list, key){
+					var click_array = [list].flat();
+				
+
+					for(var i = 0 ; i < click_array.length ; i++){
+						var click_item = document.createElement('li')
+						click_item.id = "lately_search_list"+click_itmeCount;
+						click_item.innerHTML = click_array[i];
+						console.log(click_item);
+						click_item.className = "lately_search_list";
+
+					
+					
+						click_item.onclick = function(){
+							var clic_text = $(this).text(); //넣은 글
+							console.log(clic_text);
+							//var clic_result = $("#search_input").val(); //들어갈 곳
+							$('#search_input').val(clic_text);
+							
+							$("#click_search").css("display","none");
+							$("#realtime_search").css("display","none");
+							$("#input_result").css("display","block");
+							
+							$("#search_result").text(clic_text + "의 검색결과");
+							//var clic_result = $("#search_input").val(); //들어갈 곳
+							
+							try{
+								$("#search_result_lists").empty();
+								var text_update = document.getElementById('search_input').value;
+								console.log(text_update);
+								let input_collection = db.collection('videoList')
+								
+								input_collection.get().then( (data)=>{
+									data.forEach((doc)=>{
+										inputAppend(doc.data().video_title,doc.data().video_img, doc.data().video_key);
+									})
+								})
+
+								.then(() => {
+									var input_detail=document.querySelectorAll('.lately_search_list');     
+									
+									for(var i=0;i<input_detail.length;i++){ 
+										input_detail[i].addEventListener("click", function(){
+											videodetail=videodetail*-1;
+											dv(videodetail);
+										})
+									}  
+								})
+								.catch((error) => {
+									console.error("Error writing document: ", error);
+								});
+							} catch (error) {
+								console.error(error);
+							}
+							
+						}
+				
+					
+					click_itmeCount += 1;
+					document.getElementById("lately_search_lists").append(click_item);
+					}
+				
+				}
+				
+	
+				// 검색 결과 리스트 li구성하기
+				function inputAppend(title, src, key){
+					var text_update = document.getElementById('search_input').value;
+						if (title.indexOf(text_update) != -1) {	
+							var s_input_item = document.createElement('li');
+							s_input_item.id = "lately_search_list"+s_input_itmeCount;
+							s_input_item.className = "lately_search_list";
+							s_input_item.onclick = function(){
+								videoData(key)
+							}
+						
+							console.log(s_input_item);
+							console.log(key);
+							s_input_itmeCount += 1;
+							
+							var li_img_item = document.createElement('img');
+							li_img_item.src = src;
+							
+							s_input_item.append(li_img_item);
+							
+							document.getElementById("search_result_lists").append(s_input_item);
+						}
+						
+				}
+					
+				$("#search_img_go_rt").click( function() {
+				//최근 검색어에서 실시간 인기 검색어로
+					$("#click_search").css("display","none");
+					$("#input_result").css("display","none");
+					$("#realtime_search").css("display","block");
+					$("#no_result").css("display","none");
+					
+					$('#search_input').val("");
+					$("#search_text").val("");
+
+					$("#realtime_lists").empty();
+
+					
+					try{
+
+						let search_collection = db.collection("searchInfo").orderBy("search_count", "desc").limit(10);;
+					
+						search_collection.get().then( (data)=>{
+							data.forEach((doc)=>{
+								searchAppend(doc.data().video_title, doc.data().video_key);
+							})
+						})
+
+						.then(() => {
+							
+							var search_detail=document.querySelectorAll('.realtime_list');     
+						
+							for(var i=0 ; i<=search_detail.length ; i++){ 
+								search_detail[i].addEventListener("click", function(){
+									videodetail=videodetail*-1;
+									dv(videodetail)
+								;
+								})
+							$("#click_search").css("display","none");
+							$("#realtime_search").css("display","block");
+							$("#input_result").css("display","none");
+							$("#no_result").css("display","none");
+							}  
+						})
+						.catch((error) => {
+							console.error("Error writing document: ", error);
+						});
+					} catch (error) {
+						console.error(error);
+					}
+
+				});
+
+
+			});
+
+				
+				
+			</script>
+		</head>
+		<body>
+			
+			<form id="search_frm" class="search_frm" onsubmit="return false;">
+				<button type="button" id="btn_search_tag" class="btn_search_tag"> #태그로 검색하기</button>
+				<br/>
+				<div id="search_part" class="search_part">
+					<div id="search_img_go_rt" class="search_img_go_rt">
+						<img id="mglass" class="mglass" src="./img/magnifying_glass_.svg" width="25" height="25">
+					</div>
+					<input type="text" id="search_input" class="search_input" placeholder="검색어를 입력해주세요." autocomplete='off'>		
+				</div>
+				<hr/>
+				<div id="text_search_frm" class="text_search_frm">
+
+					<!-- 첫화면 -->
+					<div id="realtime_search" class="realtime_search">
+						<div class="realtime_hot">실시간 인기 검색어</div>
+						<ul class="realtime_lists" id="realtime_lists">
+
+						</ul>
+					</div>
+					
+					<div id="click_search" class="click_search">
+						<div id="lately_search" class="lately_search">최근 검색어</div>
+						<div class="lately_all_delete">전체 내역 삭제</div>
+						<ul class="lately_search_lists" id="lately_search_lists">
+
+						</ul>
+					</div>
+			
+					<!-- 입력어에 따라 실시간 갱신 -->
+					<div id="input_result" class="input_result">
+						<div id="search_result" class="search_result">검색결과</div>
+						<ul class="search_result_lists" id="search_result_lists" >
+						</ul>
+					</div>
+					
+					<!-- 검색어 결과가 없는 경우 -->
+						<div id="no_result" class="no_result">
+							<h3>검색 결과가 없습니다.</h3>
+						</div>
+				</div>
+			</form>
+		
+			
+		</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <link rel = "styLesheet" href= "./css/main.css" >
+        <title>오브젝트 카테고리</title>
+        
+        <!-- <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script> -->
+    
+
+    </head>
+
+    <body>
+        <form id="main_list_page" class="main_list_page">
+            <h3 id="list_name"></h3>
+            <div id="items" class="items">
+                <ui id="list_publicity" class="list_publicity" >
+
+                </ui>
+            </div>
+
+        </form>
+
+        <script>
+           
+            var li_itmeCount=1;
+            const contentname = localStorage.getItem("key2");
+             $(document).ready(function() {
+
+                 $("#list_name").text(contentname);
+                 
+                try{
+                    
+                    let li_collection = db.collection('videoList').where("video_cate2", "==" , contentname);
+                    li_collection.get().then( (data)=>{
+                        data.forEach((doc)=>{
+                            listAppend(doc.data().video_img, doc.data().video_key);
+                        })
+                    })
+                    
+                    .then(() => {
+                        var li_detail=document.querySelectorAll('.item');     
+                        
+                        for(var i=0;i<li_detail.length;i++){ 
+                            li_detail[i].addEventListener("click", function(){
+                                videodetail=videodetail*-1;
+                                dv(videodetail);
+                            })
+                        }  
+                    })
+                    
+                    .catch((error) => {
+                        console.error("Error writing document: ", error);
+                    });
+                    
+                } catch (error) {
+                    
+                    console.error(error);
+                    //}
+                    
+                }   
+            })
+                
+                //리스트 li구성하기
+                function listAppend(src, key){
+                    
+                    var c_li_item = document.createElement('li');
+                    c_li_item.id = "item"+li_itmeCount;
+                    c_li_item.className = "item";
+                    c_li_item.onclick = function(){
+                        li_videoData(key);
+                    }
+                    
+                    li_itmeCount += 1;
+                    
+                    var li_img_item = document.createElement('img');
+                    li_img_item.src = src;
+                    
+                    c_li_item.append(li_img_item);
+                    
+                    document.getElementById("list_publicity").append(c_li_item);
+                }
+                
+                //$(location).prop("href", location.href);
+                
+                function li_videoData(key){
+                    const db = firebase.firestore();
+                    
+                    try{
+                        let li_collection = db.collection('videoList').where("video_key", "==", key);
+                        li_collection.get().then( (data)=>{
+                            
+                            data.forEach((doc)=>{
+                                console.log(doc.data().video_title);
+                                
+                                video_key = doc.data().video_key;
+                                video_url = doc.data().video_url;
+                                
+                                sessionStorage.setItem("video_url", doc.data().video_url);
+                                
+                                document.getElementById("detail_video_preview").innerHTML = doc.data().video_preview;
+                                
+                                document.getElementById("span_v_year").innerText = doc.data().video_release;
+                                document.getElementById("span_v_rating").innerText = doc.data().video_rating;
+                                document.getElementById("div_v_contents").innerText = doc.data().video_contents;
+                                
+                                document.getElementById("b_v_cast").innerText = doc.data().video_cast;
+                                document.getElementById("b_v_genre").innerText = doc.data().video_genre;
+                                document.getElementById("b_v_tag").innerText = doc.data().video_tag;
+                                
+                                document.getElementById("h2_v_title").innerText = doc.data().video_title;
+                                document.getElementById("b_v_title").innerText = doc.data().video_title;
+                                
+                                    document.getElementById("b_v_director").innerText = doc.data().video_director;
+                                    document.getElementById("b_v_cast2").innerText = doc.data().video_cast;
+                                    document.getElementById("b_v_genre2").innerText = doc.data().video_genre;
+                                    document.getElementById("b_v_rating").innerText = doc.data().video_rating;
+                                })
+                    
+                            })
+                            .then(() => {
+                            })
+                            .catch((error) => {
+                                console.error("Error writing document: ", error);
+                            });
+                            } catch (error) {
+                               console.error(error);
+                         }
+                 }
+                                
+                                
+                                
+             
+        </script>
+    </body>
+</html>

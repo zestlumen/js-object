@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <title>Page Title</title>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <link rel='stylesheet' type='text/css' media='screen' href='css/videoplay.css'>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.css" integrity="sha512-1hsteeq9xTM5CX6NsXiJu3Y/g+tj+IIwtZMtTisemEv3hx+S9ngaW4nryrNcPM4xGzINcKbwUJtojslX2KG+DQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <!-- 파이어베이스연결 -->
+        <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+
+        <!-- firestore 연결 -->
+        <script>
+              var firebaseConfig = {
+            apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+            authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+            projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+            storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+            messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+            appId: process.env.REACT_APP_APP_ID,
+            measurementId: process.env.REACT_APP_MEASUREMENT_ID,
+        };
+            
+            firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
+
+        </script>
+    </head>
+    <body style="background-color: black;">
+        <!-- <div style="position: absolute; width: 30%; background-color: white; ">
+            <div>
+                <img src="img/tt1.jpg">
+            </div>
+            <div>
+                <img src="img/tt1.jpg">
+            </div>
+        </div> -->
+    <!-- <div style="opacity: 0; visibility: hidden;"> -->
+        <div id = "video_movie_sideList" class="video_movie_sideList">
+        </div>
+        <div id = "video_movie_sideList2" class="video_movie_sideList">
+        </div>
+        <div id = "div_video_movie" class="div_video_movie">
+            <video id = "video_movie" class="video_movie"controls >   
+            </video>
+        </div>
+        <div id = "video_movie_header" class="nav">
+            <ul class="nav__list" id ="">
+                <li class="nav_back" id = "video_movie_back">
+                    <i class="fa-solid fa-arrow-left-long fa-3x"></i>
+                </li>
+                <li class="nav_clothes" id = "video_movie_clothes">
+                    <i class="fa-solid fa-shirt fa-3x"></i>
+                </li>
+                <li class="nav_place" id = "video_movie_place">
+                    <i class="fas fa-map-marked-alt fa-3x"></i>
+                </li>
+                <li class="nav_survey" id = "video_movie_survey">
+                    <i class="fa-solid fa-circle-exclamation fa-3x"></i>
+                </li>
+            </ul>
+        </div>
+    <!-- </div> -->
+        <script>
+            var placeSectionList;
+            var sectionList;
+
+            var startIndex = 1; // 재생-1 일시중지 1 
+            var startIndex2 = 1; // 재생-1 일시중지 1 
+
+            var startOnOff = "on"; //아이콘클릭시 무조건 off 
+            var startOnOff2 = "on"; //아이콘클릭시 무조건 off
+
+            var optionIndex = 1; //상품정보화면 onoff
+
+            var animationFrameTime = 0;
+            var animationFrameTime2 = 0;
+            var haeder_nav = document.getElementById("video_movie_header");
+            
+            window.onload = function() {
+                startIndex *= -1;
+                startIndex2 *= -1;
+                console.log("온로드 스타트인덱스 : ",startIndex);
+                dataList();
+                
+                
+                document.getElementById("video_movie_sideList").style.width = "0%";
+                document.getElementById("video_movie_sideList2").style.width = "0%";
+                
+                var video = document.getElementById("video_movie");
+                var source = document.createElement('source');
+                
+                source.setAttribute('src',sessionStorage.getItem("video_url"));
+                video.appendChild(source);
+
+                video.muted=true;
+                video.play();
+
+                document.getElementById("video_movie_header").style.visibility = "visible";
+                self.setTimeout("showHeader()",2000); 
+            
+
+                requestAnimationFrame(movieTimeCheck);
+                requestAnimationFrame(movieTimeCheck2);
+                //requestAnimationFrame(placeTimeCheck);
+                
+                movieSize();//영상 윈도우맞추기
+
+                //showIconHeader();
+                var movieBox = document.getElementById("video_movie");
+                var headerBox = document.getElementById("video_movie_header");
+                var allBox = document.getElementById("div_video_movie");
+                var sideBox = document.getElementById("video_movie_sideList");
+                allBox.addEventListener('mouseover',function(){
+                    headerBox.style.visibility = "visible";
+                    
+                })
+                headerBox.addEventListener('mouseout',function(){
+                    headerBox.style.visibility = "hidden";
+                    
+                })
+                sideBox.addEventListener('mouseover',function(){
+                    headerBox.style.visibility = "hidden";
+                })
+                
+            
+
+                document.getElementById("video_movie").addEventListener('click', function() {
+                    console.log("무비클릭 스타트인덱서 : " + startIndex)
+                    startIndex *= -1;
+                    startIndex2 *= -1;
+                    requestAnimationFrame(movieTimeCheck);
+                    requestAnimationFrame(movieTimeCheck2);
+                    //requestAnimationFrame(placeTimeCheck);
+                
+                });
+    
+                
+                document.getElementById("video_movie_header").addEventListener('click', function() {
+                    if ("on" != startOnOff) {
+                        startOnOff = "on"; //초기화 위치, on 아니면 무조건 on 만들기
+                        return;
+                    }else{
+                        startIndex *= -1;
+                        requestAnimationFrame(movieTimeCheck);
+                        requestAnimationFrame(movieTimeCheck2);
+                        //requestAnimationFrame(placeTimeCheck);
+                    }
+                    if ("on" != startOnOff2) {
+                        startOnOff2 = "on"; //초기화 위치, on 아니면 무조건 on 만들기
+                        return;
+                    }else{
+                        startIndex2 *= -1;
+                        requestAnimationFrame(movieTimeCheck2);
+                        requestAnimationFrame(movieTimeCheck2);
+                        //requestAnimationFrame(placeTimeCheck);
+                    }
+                });
+
+                //뒤로가기 버튼 , 제대로 된 위치를 못찾고 있음,상세화면안나옴..
+                document.getElementById("video_movie_back").addEventListener('click', function() {
+                    history.back();
+                });
+
+                //옷 아이콘 클릭시
+                document.getElementById("video_movie_clothes").addEventListener('click', function() {
+                    console.log("video_movie_clothes");
+        
+                    startOnOff = "off";
+                    startOnOff2 = "off";
+                    optionAnimation();
+                    //optionAnimation(c);
+                });
+
+                //장소 아이콘 클릭시
+                document.getElementById("video_movie_place").addEventListener('click', function() {
+                    console.log("video_movie_place");
+                    startOnOff = "off";
+                    startOnOff2 = "off";
+                    optionAnimation2();
+                // optionAnimation(p);
+                });
+            
+                //깃발 아이콘 클릭시
+                document.getElementById("video_movie_survey").addEventListener('click', function() {
+                });
+            }
+
+         
+            function showHeader(){
+                var movieHeader = document.getElementById("video_movie_header");
+                movieHeader.style.visibility = "hidden";
+            }
+            
+
+            //브라우저 널이 높이 변경되는 경우
+            window.onresize = function () { 
+                movieSize();
+            }
+
+          
+            //영상 윈도우높이 맞추기 
+            function movieSize() { 
+                document.getElementById("video_movie").style.height = window.innerHeight + "px";
+            }
+
+            //데이터를 배열로 가져와서 넣기
+            function dataList(){
+
+                var proImgList;
+                var proNameList;
+                var proUrlList;
+
+                var placeImgList;
+                var placeNameList;
+                var placeUrlList;
+
+                const db = firebase.firestore();
+                try{
+                    
+                    let collection = db.collection('videoAdvertisement').where("video_key", "==" , "1");
+                    collection.get().then( (data)=>{
+                        data.forEach((doc)=>{
+                            
+                            sectionList = doc.data().video_section.split(",");
+                            proImgList = doc.data().pro_img.split(",");
+                            proNameList = doc.data().pro_name.split(",");
+                            proUrlList = doc.data().pro_url.split(",");
+       
+                            placeSectionList = doc.data().place_section.split(",");
+                            placeImgList = doc.data().place_img.split(",");
+                            placeNameList = doc.data().place_name.split(",");
+                            PlaceUrlList = doc.data().place_url.split(",");
+                            //debugger;
+                        })
+                    }).then(() => {
+                        
+                        for(var i = 0; i < proImgList.length; i++){
+                            itemList(proUrlList[i],proImgList[i],proNameList[i],i+1,sectionList[i]);
+                        }
+                        for(var j = 0; j < placeImgList.length; j++){
+                            itemList2(PlaceUrlList[j],placeImgList[j],placeNameList[j],j+1,placeSectionList[j]);
+                        }
+                        //debugger;
+
+                    })
+                    .catch((error) => {
+                        console.error("Error writing document: ", error);
+                    });
+
+                } catch (error) {
+                    console.error(error);
+                }
+
+            }
+
+
+        
+
+        // function optionAnimation(ad) { //상품정보 애니메이션
+            function optionAnimation() {
+                
+                if ("25%" == document.getElementById("video_movie_sideList2").style.width ){
+                    document.getElementById("video_movie_sideList2").style.width = "0%";
+                    document.getElementById("video_movie_sideList2").style.backgroundColor = "white";
+
+                    document.getElementById("video_movie_sideList2").style.left = "100%";
+                    document.getElementById("video_movie_sideList2").style.right = "-100%";
+                }
+                
+                if ( "0%" == document.getElementById("video_movie_sideList").style.width ){
+
+                    document.getElementById("div_video_movie").style.width = "75%";
+                    document.getElementById("video_movie_header").style.width = "75%";
+                    document.getElementById("video_movie_sideList").style.width = "25%";
+                    document.getElementById("video_movie_sideList").style.backgroundColor = "black";
+
+                    document.getElementById("video_movie_sideList").style.left = "0";
+                    document.getElementById("video_movie_sideList").style.right = "0";
+                    
+                }else if ("25%" == document.getElementById("video_movie_sideList").style.width ){
+
+                    document.getElementById("div_video_movie").style.width = "100%";
+                    document.getElementById("video_movie_header").style.width = "100%";
+                    document.getElementById("video_movie_sideList").style.width = "0%";
+                    document.getElementById("video_movie_sideList").style.backgroundColor = "white";
+
+                    document.getElementById("video_movie_sideList").style.left = "100%";
+                    document.getElementById("video_movie_sideList").style.right = "-100%";
+                }
+            }
+
+            
+            function optionAnimation2() {
+              
+                if ("25%" == document.getElementById("video_movie_sideList").style.width ){
+                    document.getElementById("video_movie_sideList").style.width = "0%";
+                    document.getElementById("video_movie_sideList").style.backgroundColor = "white";
+
+                    document.getElementById("video_movie_sideList").style.left = "100%";
+                    document.getElementById("video_movie_sideList").style.right = "-100%";
+                }
+                
+                if ( "0%" == document.getElementById("video_movie_sideList2").style.width ){
+
+                    document.getElementById("div_video_movie").style.width = "75%";
+                    document.getElementById("video_movie_header").style.width = "75%";
+                    document.getElementById("video_movie_sideList2").style.width = "25%";
+                    document.getElementById("video_movie_sideList2").style.backgroundColor = "black";
+
+                    document.getElementById("video_movie_sideList2").style.left = "0";
+                    document.getElementById("video_movie_sideList2").style.right = "0";
+     
+                }else if ("25%" == document.getElementById("video_movie_sideList2").style.width ){
+
+                    document.getElementById("div_video_movie").style.width = "100%";
+                    document.getElementById("video_movie_header").style.width = "100%";
+                    document.getElementById("video_movie_sideList2").style.width = "0%";
+                    document.getElementById("video_movie_sideList2").style.backgroundColor = "white";
+
+                    document.getElementById("video_movie_sideList2").style.left = "100%";
+                    document.getElementById("video_movie_sideList2").style.right = "-100%";
+                }
+            }
+
+
+            //옷 시간체크 광고나오게하기
+            function movieTimeCheck(){
+
+                if (-1 == startIndex) {
+                    document.getElementById("video_movie").play();
+                    requestAnimationFrame(movieTimeCheck);
+                } else {
+                    document.getElementById("video_movie").pause();
+                    cancelAnimationFrame(movieTimeCheck); //setTimeout()의 clear Timeout()처럼 동작함
+                }
+                animationFrameTime += 1;
+        
+                if ( sectionList == undefined ){
+                        return;
+                }
+
+                //console.log("---------sectionlist-----");
+                //console.log(Math.floor((parseInt(animationFrameTime))/60));
+
+                for( var i=0; i<sectionList.length; i++){
+                    if( sectionList[i] == animationFrameTime/60 ){
+                        document.getElementById("div_item_" + (i+1)).style.opacity = "1";
+                        document.getElementById("div_item_" + (i+1)).style.visibility = "visible";
+                        document.getElementById("div_item_" + (i+1)).style.width = "65%";
+                        if ( sectionList[2] == animationFrameTime/60 ){
+                            document.getElementById("video_movie_sideList").scrollTo({left:0, top:400, behavior:'smooth'});
+                        }else if ( sectionList[4] == animationFrameTime/60 ){
+                            document.getElementById("video_movie_sideList").scrollTo({left:0, top:1630, behavior:'smooth'});
+                        }else if ( sectionList[6] == animationFrameTime/60 ){
+                            document.getElementById("video_movie_sideList").scrollTo({left:0, top:2300, behavior:'smooth'});
+                        }else if ( sectionList[8] == animationFrameTime/60 ){
+                            document.getElementById("video_movie_sideList").scrollTo({left:0, top:3010, behavior:'smooth'});
+                        } else if ( sectionList[10] ==  animationFrameTime/60 ){
+                            document.getElementById('video_movie_sideList').scrollTo({left:0, top:document.getElementById('video_movie_sideList').scrollHeight, behavior:'smooth'});
+                        }
+                    }
+                }
+            }
+
+            //옷 시간체크 광고나오게하기
+            function movieTimeCheck2(){
+                
+                if (-1 == startIndex2) {
+                    document.getElementById("video_movie").play();
+                    requestAnimationFrame(movieTimeCheck2);
+                } else {
+                    document.getElementById("video_movie").pause();
+                    cancelAnimationFrame(movieTimeCheck2); //setTimeout()의 clear Timeout()처럼 동작함
+                }
+                animationFrameTime2 += 1;
+
+                if ( placeSectionList == undefined ){
+                        return;
+                }
+                //console.log("---------sectionlist-----");
+                //console.log(Math.floor((parseInt(animationFrameTime))/60));
+
+                for( var i=0; i<sectionList.length; i++){
+                    if( sectionList[i] == animationFrameTime/60 ){
+                        document.getElementById("div_item_" + (i+1)).style.opacity = "1";
+                        document.getElementById("div_item_" + (i+1)).style.visibility = "visible";
+                        document.getElementById("div_item_" + (i+1)).style.width = "60%";
+                        if ( sectionList[2] == animationFrameTime/60 ){
+                            document.getElementById("video_movie_sideList").scrollTo({left:0, top:500, behavior:'smooth'})
+                        }else if ( sectionList[4] == animationFrameTime/60 ){
+                            document.getElementById("video_movie_sideList").scrollTo({left:0, top:1020, behavior:'smooth'});
+                        }else if ( sectionList[6] == animationFrameTime/60 ){
+                            document.getElementById("video_movie_sideList").scrollTo({left:0, top:1500, behavior:'smooth'});
+                        }else if ( sectionList[8] == animationFrameTime/60 ){
+                            document.getElementById("video_movie_sideList").scrollTo({left:0, top:1920, behavior:'smooth'});
+                        } else if ( sectionList[10] ==  animationFrameTime/60 ){
+                            document.getElementById('video_movie_sideList').scrollTo({left:0, top:document.getElementById('video_movie_sideList').scrollHeight, behavior:'smooth'});
+                        }
+                    }
+                }
+                
+            }
+        
+            //옷광고 요소추가
+            function itemList(href, src, name, index, seconds){
+
+                var hr = Math.floor(parseInt(seconds)/3600);
+                var min = Math.floor((parseInt(seconds)-(hr*3600))/60);
+                var sec = Math.floor(parseInt(seconds)-(hr*3600)-(min*60));
+                if( hr < 10 ) { hr = "0" + hr; }
+                if( min < 10 ) { min = "0" + min; }
+                if( sec < 10 ) { sec = "0" + sec; }
+                if( hr ) {hr = "00";}
+                
+                var time = min +":" + sec;
+
+                var div_item_list = document.createElement('div');
+                var div_item = document.createElement('div');
+                var b_seconds_item = document.createElement('b');
+                var a_item = document.createElement('a');
+                var img_item = document.createElement('img');
+                var span_name_item = document.createElement('span');
+                
+                div_item.id = "div_item_"+index;
+                div_item.style.width = "0%";
+                div_item.style.margin = "0px auto";
+                div_item.style.marginTop = "50px";
+                div_item.style.marginBottom = "50px";
+                div_item.style.opacity = "0";
+                div_item.style.visibility = "hidden";
+                div_item.style.transition = "all 1s ease-in-out";
+                div_item.style.textAlign = "center";
+                div_item.style.display = "flex";
+                div_item.style.gap ="10px"; 
+
+                a_item.href = href;
+                a_item.target = "_blank";
+                a_item.style.textDecoration = "none";
+                a_item.style.color = "white";
+                a_item.style.backgroundColor = "black";
+
+                img_item.src = src;
+                img_item.style.width = "100%";
+                img_item.style.borderRadius = "7px";
+                
+                b_seconds_item.innerText = time;
+                span_name_item.innerHTML = name;
+                
+                b_seconds_item.style.color = "white";
+                span_name_item.style.display = "inline-block";
+                span_name_item.style.color = "white";
+                span_name_item.style.marginTop = "13px";
+            
+                a_item.append(img_item);
+                a_item.append(span_name_item);
+                
+                div_item.append(b_seconds_item);
+                div_item.append(a_item);
+            
+                document.getElementById("video_movie_sideList").append(div_item);
+
+            }
+
+            //장소광고 요소추가
+            function itemList2(href, src, name, index, seconds){
+
+                var hr = Math.floor(parseInt(seconds)/3600);
+                var min = Math.floor((parseInt(seconds)-(hr*3600))/60);
+                var sec = Math.floor(parseInt(seconds)-(hr*3600)-(min*60));
+                if( hr < 10 ) { hr = "0" + hr; }
+                if( min < 10 ) { min = "0" + min; }
+                if( sec < 10 ) { sec = "0" + sec; }
+                if( hr ) {hr = "00";}
+
+                var time = min +":" + sec;
+
+                var div_item = document.createElement('div');
+                var b_seconds_item = document.createElement('b');
+                var a_item = document.createElement('a');
+                var img_item = document.createElement('img');
+                var span_name_item = document.createElement('span');
+
+
+                div_item.id = "div_placeItem_"+index;
+                div_item.style.width = "0%";
+                div_item.style.margin = "0px auto";
+                div_item.style.marginTop = "120px";
+                div_item.style.marginBottom = "120px";
+                div_item.style.opacity = "0";
+                div_item.style.visibility = "hidden";
+                div_item.style.transition = "all 1s ease-in-out";
+                div_item.style.textAlign = "center";
+                div_item.style.display = "flex";
+                div_item.style.gap ="40px"; 
+
+                a_item.href = href;
+                a_item.target = "_blank";
+                a_item.style.textDecoration = "none";
+                a_item.style.color = "white";
+                a_item.style.backgroundColor = "black";
+
+                img_item.src = src;
+                img_item.style.width = "100%";
+                img_item.style.borderRadius = "7px";
+
+                b_seconds_item.innerText = time;
+                span_name_item.innerHTML = name;
+
+                b_seconds_item.style.color = "white";
+                span_name_item.style.display = "inline-block";
+                span_name_item.style.color = "white";
+                span_name_item.style.marginTop = "13px";
+
+                a_item.append(img_item);
+                a_item.append(span_name_item);
+
+                div_item.append(b_seconds_item);
+                div_item.append(a_item);
+
+                document.getElementById("video_movie_sideList2").append(div_item);
+
+            }
+
+
+            // function itemListFooter(){
+            
+            //     var div_item = document.createElement('div');
+            //     div_item.id = "div_item_footer";
+            //     //div_item.style.width = "50%";
+            //     div_item.style.height = "200px";
+            //     div_item.style.opacity = "1";
+            //     div_item.style.visibility = "visible";
+            //     div_item.style.transition = "all 0.5s ";
+            //     div_item.style.transitionDelay = "1s";
+            //     div_item.innerText = ".";
+            //     document.getElementById("video_movie_sideList").append(div_item);
+            // }
+
+
+        </script>
+    </body>
+</html>

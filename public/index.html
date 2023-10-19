@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Type-Obejct</title>
+	<link rel='stylesheet' href='./css/index.css'>
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<!-- 파이어베이스연결 -->
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+
+	<!-- firestore 연결 -->
+	<script>
+
+		var firebaseConfig = {
+			apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+			authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+			projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+			storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+			messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+			appId: process.env.REACT_APP_APP_ID,
+			measurementId: process.env.REACT_APP_MEASUREMENT_ID,
+		};
+
+		firebase.initializeApp(firebaseConfig);
+		firebase.analytics();
+	</script>
+	<script>
+		window.onload = function () {
+			document.getElementById('logo_img').addEventListener("click", function () {
+				location.href = "index.html";
+			})
+			document.getElementById('join_banner').addEventListener("click", function () {
+				location.href = "sign_up_form.html";
+			})
+			document.getElementById('btn_login_page').addEventListener("click", function () {
+				location.href = "login_form.html";
+			})
+
+			var itemIndex = document.querySelectorAll('.item_index');
+			for (var i = 0; i < itemIndex.length; i++) {
+				itemIndex[i].addEventListener("click", function () {
+					location.href = "login_form.html";
+				})
+			}
+		}	
+	</script>
+</head>
+
+<body>
+	<div id="index" class="index">
+
+		<header id='header' class="header">
+			<div id="logo" class="logo" onclick="logo_main">
+				<img id="logo_img" class="logo_img" src="./img/object_logo.png" width="40" height="40">
+			</div>
+			<div id="header_loginout" class="header_loginout">
+				<button id="btn_login_page" class="btn_login_page">로그인</button>
+			</div>
+		</header>
+
+		<form id="promotion" class="promotion">
+			<div id="join_banner" class="join_banner" onclick="">OBJECT, 영화,드라마의 모든 것을 담다. JOIN >></div>
+			<div id="index_publicity" class="index_publicity">
+
+				<a class="ex_img" href="./login_form.html">
+					<div id="e_img" class="e_img"> </div>
+					<img id="ex_imgS" class="ex_imgS" src="./img/index_main.png">
+				</a>
+			</div>
+
+			<div id="sub_publicity" class="sub_publicity">
+				<div class="items">
+					<div id="item_text" class="item_text">한국 영화 / 해외 영화</div>
+					<ul id="ul_indexList1">
+						<li id="item_index1" class="item_index"><img src="./img/51_Believer.jpg"></li>
+						<li id="item_index2" class="item_index"><img src="./img/33_Snowpiercer.jpg"></li>
+						<li id="item_index3" class="item_index"><img src="./img/50_witch.jpg"></li>
+						<li id="item_index4" class="item_index"><img src="./img/32_Inception.jpg"></li>
+						<li id="item_index4" class="item_index"><img src="./img/34_Knives_Out.jpg"></li>
+					</ul>
+					<div id="item_text" class="item_text">한국 드라마 / 해외 드라마</div>
+					<ul id="ul_indexList2">
+						<li id="item_index5" class="item_index"><img src="./img/3_WhyOhSoojae.jpg"></li>
+						<li id="item_index6" class="item_index"><img src="./img/4_human disqualification.jpg"></li>
+						<li id="item_index7" class="item_index"><img src="./img/27_Why_Women_Kill.jpg"></li>
+						<li id="item_index8" class="item_index"><img src="./img/30_unnatural_death.jpg"></li>
+						<li id="item_index8" class="item_index"><img src="./img/26_CSI.jpg"></li>
+					</ul>
+					<div id="item_text" class="item_text">애니메이션</div>
+					<ul id="ul_indexList3">
+						<li id="item_index9" class="item_index"><img src="./img/24_OnePiece.jpg"></li>
+						<li id="item_index10" class="item_index"><img src="./img/49_moonlight_angel.jpg"></li>
+						<li id="item_index11" class="item_index"><img src="./img/23_Conan.jpg"></li>
+						<li id="item_index12" class="item_index"><img src="./img/47_Summer_Wars.jpg"></li>
+						<li id="item_index13" class="item_index"><img src="./img/25_HighQ.jpg"></li>
+					</ul>
+
+				</div>
+			</div>
+		</form>
+		<footer id="footer" class="footer">
+			(주)TypeObject<br />
+			제작 : 김다영, 김채현<br />
+			tel : 010-0000-0000<br />
+			주소 : 서울특별시 관악구 남부순환로
+		</footer>
+	</div>
+
+</body>
+
+</html>

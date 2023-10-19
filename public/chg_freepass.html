@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>이용권 변경-오브젝트</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' href='./css/chg_freepass.css'>
+    <script src="./lib/jquery-3.6.0.min.js"></script>
+    <!-- 파이어베이스연결 -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+
+    <!-- firestore 연결 -->
+    <script>
+
+        var firebaseConfig = {
+            apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+            authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+            projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+            storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+            messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+            appId: process.env.REACT_APP_APP_ID,
+            measurementId: process.env.REACT_APP_MEASUREMENT_ID,
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+
+    </script>
+    <script>
+
+        window.onload = function () {
+            var userPayment = sessionStorage.getItem("userPayment");
+            var btn_free_chg = document.getElementById('btn_free_chg');
+
+            if ("basic" == userPayment) {
+                document.getElementById('chg_freepass_h3').innerText = "프리미엄으로 변경하시겠습니까?";
+                document.getElementById('chg_freepass_info').innerText = "Ultra HD 4K 화질 제공, 4명 동시재생 가능한 프로필 상태로 변경됩니다.";
+                ul_freepass2.style.color = "rgb(70, 70, 70)";
+                ul_freepass3.style.color = "rgb(112, 157, 248)";
+                btn_basic.style.border = "1px solid  rgb(70, 70, 70)";
+                btn_basic.style.color = "rgb(70, 70, 70)";
+                btn_premium.style.border = "1px solid  rgb(112, 157, 248)";
+
+            } else if ("premium" == userPayment) {
+                document.getElementById('chg_freepass_h3').innerText = "베이직으로 변경하시겠습니까?";
+                document.getElementById('chg_freepass_info').innerText = "동시 재생이 지원되지 않아 기본 프로필 제외한 다른 프로필은 잠금 상태로 변경됩니다.";
+
+                ul_freepass2.style.color = "rgb(112, 157, 248)";
+                ul_freepass3.style.color = "rgb(70, 70, 70)";
+                btn_basic.style.border = "1px solid  rgb(112, 157, 248)";
+                btn_basic.style.color = "rgb(112, 157, 248)";
+                btn_premium.style.border = "1px solid  rgb(70, 70, 70)";
+                btn_premium.style.color = "rgb(70, 70, 70)";
+            }
+
+            btn_free_chg.addEventListener("click", function () {
+
+                // firestore 사용
+                const db = firebase.firestore();
+
+                console.log(sessionStorage.getItem("userEmail"));
+                var user_email = sessionStorage.getItem("userEmail");
+                var user_name = sessionStorage.getItem("userName");
+                let today = new Date();
+                var user_profile = "";
+                var user_payment = "";
+
+                let collection = db.collection('userPayment');
+
+                if ("basic" == userPayment) {
+
+                    user_payment = "premium";
+                    user_profile = "user1,user2,user3,user4";
+                } else if ("premium" == userPayment) {
+
+                    user_payment = "basic";
+                    user_profile = "user1";
+                }
+
+                collection.doc(user_email).set({//해당이메일문서에 문서필드 넣기
+                    user_email: user_email,
+                    user_name: user_name,
+                    user_payment: user_payment,
+                    time: today.toLocaleString().replace(" ", ""),
+                    user_profile: user_profile
+                })
+                    .then(() => {
+                        alert("이용권이 변경되었습니다.");
+
+                        sessionStorage.setItem("userPayment", user_payment);
+                        sessionStorage.setItem("userProfile", user_profile);
+
+                        //console.log(sessionStorage.setItem("userProfile", user_profile));
+                        window.location.href = "./accset.html";
+                    })
+                    .catch((error) => {
+                        console.error("Error writing document: ", error);
+                    });
+
+            })
+        }
+    </script>
+</head>
+
+<body>
+    <div class="chg_freepass">
+        <div class="chg_freepass_head">
+            <h3 id="chg_freepass_h3"> 이용권 변경 </h3>
+            <div id="chg_freepass_info">이용권 변경 안내멘트</div>
+        </div>
+        <div class="flex_ul_freepass">
+            <ul class="ul_freepass1">
+                <li class="li_line1 li_line1_pass"></li>
+                <li>월 요금</li>
+                <li>동시 재생이 가능한 수</li>
+                <li>지원하는 최대 화질</li>
+                <li>HRD 10+의 선명한 화질</li>
+                <li>저장 가능한 다운로드 영상 수</li>
+                <li>TV,폰, 태블릿,PC에서 재생</li>
+                <li>영상 재생시 쇼핑정보 제공</li>
+            </ul>
+            <ul class="ul_freepass2" id="ul_freepass2">
+                <li class="li_line1"><button id="btn_basic" class="btn_basic" type="button">베이직</button></li>
+                <li>8,900원</li>
+                <li>1</li>
+                <li>Full HD</li>
+                <li>X</li>
+                <li>5</li>
+                <li>O</li>
+                <li>O</li>
+            </ul>
+            <ul class="ul_freepass3" id="ul_freepass3">
+                <li class="li_line1"><button id="btn_premium" class="btn_premium" type="button">프리미엄</button></li>
+                <li>12,900원</li>
+                <li>4</li>
+                <li>Ultra HD 4K</li>
+                <li>O</li>
+                <li>100</li>
+                <li>O</li>
+                <li>O</li>
+            </ul>
+        </div>
+        <div>
+            <button type="button" id="btn_free_chg" class="btn_free_chg">이용권 변경하기</button>
+        </div>
+    </div>
+
+</body>
+
+</html>

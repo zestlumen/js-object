@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>로그인-오브젝트</title>
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+	<link rel='stylesheet' href='./css/loginout.css'>
+	<!-- <script src="./lib/jquery-3.6.0.min.js"></script> -->
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<!-- 파이어베이스연결 -->
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+
+	<!-- firestore 연결 -->
+	<script>
+
+
+		var firebaseConfig = {
+			apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+			authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+			projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+			storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+			messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+			appId: process.env.REACT_APP_APP_ID,
+			measurementId: process.env.REACT_APP_MEASUREMENT_ID,
+		};
+
+		firebase.initializeApp(firebaseConfig);
+		firebase.analytics();
+
+
+
+		//---------------------------------------------------
+
+
+	</script>
+	<script>
+		const db = firebase.firestore();
+
+		function loginAction() {
+			var loginCheckCount = 0;
+			var focus_id = document.getElementById("id_text");
+			var focus_pwd = document.getElementById("pwd_text");
+			var id_text = document.getElementById("id_text").value;
+			var pwd_text = document.getElementById("pwd_text").value;
+
+			if ("" == id_text) {
+				alert("이메일을 입력해주세요.");
+				focus_id.focus();
+				return;
+			}
+			if ("" == pwd_text) {
+				alert("비밀번호를 입력해주세요.");
+				focus_pwd.focus();
+				return;
+			}
+
+			try {
+				let collection = db.collection('userInfo');
+				collection.get().then((data) => {
+					//console.log(data.size);
+					data.forEach((doc) => {
+						//console.log(doc.data());
+						if (id_text == doc.data().user_email && pwd_text == doc.data().user_pw) {
+							loginCheckCount += 1;
+							sessionStorage.setItem("userEmail", doc.data().user_email);
+							sessionStorage.setItem("userName", doc.data().user_name);
+							return;
+						}
+					})
+				})
+					.then(() => {
+						console.log("Document successfully total!");
+
+						var paymentCheck = 0;
+						if (0 < loginCheckCount) {
+
+							let collection2 = db.collection('userPayment');
+							collection2.get().then((data) => {
+
+								data.forEach((doc) => {
+									if (id_text == doc.data().user_email) {
+										paymentCheck += 1;
+										sessionStorage.setItem("userPayment", doc.data().user_payment);
+										sessionStorage.setItem("userProfile", doc.data().user_profile);
+										return;
+									}
+								})
+
+							}).then(() => {
+								id_text = "";
+								pwd_text = "";
+
+								if (0 < paymentCheck) {
+									window.location.href = "./choiceprofile.html";
+								} else if (0 == paymentCheck) {
+									window.location.href = "login_freepass.html";
+								}
+							}).catch((error) => {
+								console.error("Error writing document: ", error);
+							});
+						}
+						else {
+							alert("이메일 또는 비밀번호를 확인해 주세요.");
+							document.getElementById("id_text").value = "";
+							document.getElementById("pwd_text").value = "";
+							focus_id.focus();
+
+						}
+					})
+					.catch((error) => {
+						console.error("Error writing document: ", error);
+					});
+			} catch (error) {
+				console.error(error);
+			}
+		}
+	</script>
+</head>
+
+<body>
+	<form id="loginout_form" class="loginout_form">
+		<!-- <a href="sign_up_form.html"><input type="button" class="btn_sign" value="회원가입" ></a> 
+				이미 아래에 회원가입 칸이 있기때문에 굳이 중복으로 없어도 되지 않을까요?-->
+		<h3> 로그인 </h3>
+
+		<div id="input_id" class="input_id">
+			<input type="email" class="id_text" id="id_text" autocomplete="email" required placeholder="이메일">
+			<br />
+		</div>
+		<div id="input_pwd" class="input_pwd">
+			<input type="password" class="pwd_text" id="pwd_text" placeholder="비밀번호" required>
+		</div>
+		<br />
+
+		<button type="button" id="btn_login" class="btn_loginout" onclick="loginAction()"> 로그인 </button>
+
+		<br />
+		<div class="loginout_bottom">
+			<div>비밀번호를 잊어버리셨나요?</div>
+			<a href="form_find_pwd.html">비밀번호 찾기</a><br />
+		</div>
+		<div class="loginout_bottom">
+			<div>아직 회원이 아니신가요?</div>
+			<a href="sign_up_form.html">회원가입하기</a><br>
+		</div>
+	</form>
+
+
+</body>
+
+</html>

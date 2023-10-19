@@ -1,0 +1,91 @@
+/* video::-webkit-media-controls {
+    display: none;
+} */
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: black;
+    /* box-sizing: border-box; */
+}
+
+.div_video_movie {
+    position: absolute;
+    width: 100%;
+    transition: all 1s;
+}
+
+
+.video_movie {
+    width: 100%;
+    background-color: black;
+}
+
+.video_movie_sideList {
+    position: absolute;
+    width: 0%;
+    height: 100%;
+    margin-left: 75%;
+    padding: auto;
+    overflow-y: scroll;
+    transition: all 1s ease-in-out;
+}
+
+.nav {
+    /* nav 항상 아래쪽으로 고정시키기 */
+    position: absolute;
+    background-color: transparent;
+    top: 0;
+    width: 100%;
+    height: 100px;
+    padding: 20px 50px;
+    /* transition: all ease-in-out; */
+    box-sizing: border-box;
+    /* visibility: hidden; */
+    /* border-top: 1px solid rgba(121, 121, 121, 0.708); */
+    visibility: hidden;
+}
+
+
+
+/* .nav.show{
+    visibility: visible;
+
+} */
+ul {
+    width: 100%;
+    list-style-type: none;
+    padding-left: 0px;
+}
+
+.nav__list {
+    color: rgba(250, 250, 250, 0.849);
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.nav__list i:hover {
+    cursor: pointer;
+    color: rgb(112, 157, 248);
+    opacity: 1;
+}
+
+
+a {
+    display: inline-block;
+    transition: all 0.5s ease-in-out;
+}
+
+a:hover {
+    transform: scale(1.2);
+}
+
+a:hover span {
+    text-decoration: underline;
+}
+
+/* .fa-shirt, .fa-map-marked-alt{
+    color: white;
+} */

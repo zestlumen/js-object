@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel = "styLesheet" href= "../css/search.css" >
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<!-- 파이어베이스연결 -->
+<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+
+<!-- firestore 연결 -->
+<script>
+	var firebaseConfig = {
+		apiKey: "AIzaSyDUhVSDi48s2nP5ZXnYhL1VDkgPTXlYuXM",
+		authDomain: "type-object.firebaseapp.com",
+		projectId: "type-object",
+		storageBucket: "type-object.appspot.com",
+		messagingSenderId: "591050541996",
+		appId: "1:591050541996:web:cf747fc6eb0c64cf384809",
+		measurementId: "G-0ZSTMSPW1H"
+	};
+	
+	firebase.initializeApp(firebaseConfig);
+	firebase.analytics();
+
+</script>
+</head>
+<body>
+
+<form id="search_frm" class="search_frm" onsubmit="return false;">
+	<button type="button" id="btn_search_text" class="btn_search_text"> #검색어로 검색하기</button>
+	<br/>
+	<div id="search_part" class="search_part">
+		<div id="search_img" class="search_img">
+			<img id="mglass" class="mglass" src="./img/magnifying_glass_.svg" width="25" height="25">
+		</div>
+		<input type="text" id="search_input" class="search_input" placeholder="태그를 선택해주세요." autocomplete='off'>
+	</div>
+	
+	<hr/>
+	
+	<ul id="content_random_tags" class="content_random_tags">
+		<li id="content_random_tag" class="content_random_tag" value="#랜덤태그">#랜덤태그</li>
+		<li id="content_random_tag" class="content_random_tag">#랜덤태그</li>
+		<li id="content_random_tag" class="content_random_tag">#랜덤태그</li>
+		<li id="content_random_tag" class="content_random_tag">#랜덤태그</li>
+		<li id="content_random_tag" class="content_random_tag">#랜덤태그</li>
+		<li id="content_random_tag" class="content_random_tag">#랜덤태그</li>	
+	</ul>
+	
+	
+	
+	
+	<div id="contenttag_Searchs" class="contenttag_Searchs">
+		<!-- 다수 태그 순으로? -->
+		<ul id= "contenttag_Search" class="contenttag_Search" >
+			<li id="contenttag_01" class="contenttag"> #태그</li>
+			<li id="contenttag_02" class="contenttag"> #태그</li>
+			<li id="contenttag_03" class="contenttag"> #태그</li>
+			<li id="contenttag_04" class="contenttag"> #태그</li>
+			<li id="contenttag_05" class="contenttag"> #태그</li>
+			<li id="contenttag_06" class="contenttag"> #태그</li>
+			<li id="contenttag_07" class="contenttag"> #태그</li>
+			<li id="contenttag_08" class="contenttag"> #태그</li>
+			<li id="contenttag_09" class="contenttag"> #태그</li>
+			<li id="contenttag_10" class="contenttag"> #되는태그</li>
+			<li id="contenttag_11" class="contenttag"> #태그이건</li>
+			<li id="contenttag_12" class="contenttag"> #태그어때</li>
+			<li id="contenttag_13" class="contenttag"> #태그</li>
+			<li id="contenttag_14" class="contenttag"> #태그</li>
+			<li id="contenttag_15" class="contenttag"> #태그</li>
+			<li id="contenttag_16" class="contenttag"> #태그</li>
+			<li id="contenttag_17" class="contenttag"> #태그</li>
+			<li id="contenttag_18" class="contenttag"> #태그</li>
+
+		</ul>
+	</div>
+
+	
+	
+	<!-- 검색결과 -->
+	<div id="tag_result" class="tag_result">
+	
+		<div id="and_tag_items" class="and_tag_items">
+			<ui id="list_publicity" class="list_publicity" >
+				<li id="and_item" class="and_item"> 포스터 </li>
+				<li id="and_item" class="and_item"> 포스터 </li>
+				<li id="and_item" class="and_item"> 포스터 </li>
+				<li id="and_item" class="and_item"> 포스터 </li>
+			</ui>
+		</div>
+
+
+	
+		<!-- or 영역 -->
+		<div id="or_search_result" class="or_search_result">이 작품은 어떠신가요?</div>
+		
+		<div id="or_search_items" class="or_search_items">
+			<ui id="list_publicity" class="list_publicity" >
+				<li id="or_item" class="or_item"> 포스터 </li>
+				<li id="or_item" class="or_item"> 포스터 </li>
+				<li id="or_item" class="or_item"> 포스터 </li>
+				<li id="or_item" class="or_item"> 포스터 </li>
+			</ui>
+		</div>
+		
+		
+	</div>
+</form>
+
+<script>
+	/*
+	추가해야하는 사항들
+		1. 태그들이 입력된 자료들로 표기하게 하기.
+		2. 랜덤캐드 : 랜덤 산출  ||  기본태그 : 가장 많은 순으로 (서로 중복이 없게하면 더 좋음)
+		3. 아래 태그 사항에 맞춰 이미지 갱신
+	*/
+
+	var tag_Count = 0;
+	var tag_arrays=[];
+	//var tag_list=[];
+	const tag_item=[];
+
+	$(document).ready(function() {
+		try{
+			let tags = db.collection("videoList").orderBy("video_tag", "asc")
+
+
+			tags.get().then( (data)=>{
+				data.forEach((doc)=>{
+					tagAppend(doc.data().video_tag);
+					// tag_array = (doc.data().video_tag);
+					// tag_arrays = tag_arrays + tag_array;
+
+					// const tag_list = tag_arrays.split(',');
+					// const tag_list2= new Set(tag_list);
+					//const tag_list= new Set(tag_arrays);
+					//console.log(tag_list2);
+					// tagAppend(tag_list2);
+					//tagAppend(tag_list2)
+				})
+			})
+
+			.then(() => {
+				// var tag_item = tag_list2;
+				// //클릭시 색바꾸기/화면에 출력하기빠지기
+				// console.log(tag_item);
+				// var li_detail=document.querySelectorAll('.item');     
+					
+				// for(var i=0;i<li_detail.length;i++){ 
+				// 	li_detail[i].addEventListener("click", function(){
+				// 		videodetail=videodetail*-1;
+				// 		dv(videodetail);
+				// 	})
+				// }  
+				
+			})
+			
+			.catch((error) => {
+				console.error("Error writing document: ", error);
+			});
+			
+		} catch (error) {
+			console.error(error);
+		}	
+
+		// function tagAppend(tag){
+		// 	tag_arrays=[tag];
+		// 	console.log(tag_arrays);
+		// 	//tag_list =[...tag_arrays[0], ...tag_arrays[1]];
+		// 	//tag_list = tag_arrays.catch(tag_arrays);
+		// 	//console.log(tag_list);
+		// }
+
+
+
+
+
+
+
+
+			
+		//받아온 데이터를 합치기
+		function tagAppend(tag){
+			// //console.log(tag);
+			tag_array_li = [tag];
+			// const tag_arrays = tag_arrays + tag_array;
+			// const tag_list = tag_arrays.split(',');
+			//console.log(tag_array_li);
+			// //var tag_array = [tag];
+			// //tag_arrays = tag_arrays + tag_array;
+
+			// //const tag_list = tag_arrays.split(',');
+			// //const tag_list2= new Set(tag_list);
+			tag_item.push(tag_array_li);
+			// //const tag_item= new Set(tag_arrays);
+			
+			// var tag_item = document.createElement('li');
+			// tag_item.id = "contenttag"+tag_Count;
+			// tag_item.className = "contenttag";
+			// tag_item.innerHTML = tag_list;
+			//tag_item.onclick = function(){
+			// // 	if(tag_item.innerHTML != ){
+
+			// // 	}else{ 
+
+			// 	}
+		}
+		// tag_items = [tag_item].toString();
+		//var ex = tag_item[tag_item.length-1];
+
+		//const tag_items = tag_item=>[].concat(...tag_item);
+		console.log(tag_item);
+		
+
+
+		// for(var i=0 ; i<=40 ; i++){
+		// 	tag_item[i].push(tag_item[i+1]);
+		// 	tag_item = tag_item;
+		// }
+		//const tag_list.
+		//const tag_list = tag_item[0].concat(tag_item[1]);
+	//	console.log(tag_list);
+		//const tag_list = tag_item.split(',');
+		//const tag_list2= new Set(tag_item);
+		//console.log(tag_list2);
+		
+		// 	tag_Count += 1;
+		// 	document.getElementById("contenttag_Search").append(tag_item);
+
+		// }
+		
+					
+					// tag_arrays[tag_Count] = doc.data().video_tag;
+					// tag_Count += 1;
+					
+					
+					// for(var i=0 ; i<=tag_arrays.length ; i++){
+						// 	const tag_list = tag_arrays.concat(tag_arrays[i]);
+						// 	//tag_list = tag_arrays.join(",");
+						// }
+						//console.table(tag_arrays);
+						//tag_list =
+					// tag_arrays.forEach((value, index) => {
+						// 	console.log(tag_arrays.slice(index,index+1));
+						// });
+					// })
+				//console.log(tag_arrays);
+				// var tag_list = tag_arrays.concat(tag_arrays);
+				// console.log(tag_list);
+				// for(var i=0 ; i<=tag_Count ; i++){
+				// var tag_list = tag_arrays.concat(tag_arrays[tag_Count]);
+				
+				// 	tag_arrays.concat(tag_arrays[i]);
+				// }
+
+
+			// function tag_array(tag){
+			// 	var tag_arrays = [];
+			// 	tag_arrays[tag_Count] = tag;
+			// 	tag_Count += 1;
+			// }
+			// console.log(tag_arrays[0]);
+			// console.log(tag_arrays[2]);
+			// console.log(tag_arrays);
+			// // console.log(tag_arrays.length);
+			// for(var i=0 ; i<=tag_arrays.length ; i++){
+			// 	tag_arrays[0].concat(tag_arrays[i]);
+			// }
+			
+			// var tag_list = new Array;
+			
+			//console.log(tag_arrays[0]);
+
+			// var tag_hap = tags.concat(a)
+
+			// var tag_list = tag_hap.filter((item, pos) => tag_hap.indexOf(item) === pos);
+			// console.log(tag_list);
+
+
+			
+			// tag_list.get().then( (data)=>{
+			// 	data.forEach((doc)=>{
+			// 		clickAppend(doc.data().video_title, doc.data().video_key);
+			// 	})
+			// })
+
+			
+				
+		 
+
+		//태그 array로 뽑아놓기.
+		
+
+		// function clickAppend(title, key){
+		// 	// var click_item = document.createElement('li');
+		// 	// click_item.id = "lately_search_list"+click_itmeCount;
+		// 	// click_item.innerHTML = title;
+		// 	// click_item.className = "lately_search_list";
+		// 	// click_item.onclick = function(){
+		// 	// 	click_videoData(key);
+		// 	// }
+			
+		// 	// click_itmeCount += 1;
+		// 	// document.getElementById("lately_search_lists").append(click_item);
+		// }
+		
+	})	
+		
+		
+
+	$(".contenttag_Search li").on('click', function() {
+		//클릭시 색상변경
+		$(this).css("backgroundColor","#3BB7FF")
+		
+		//클릭시 태그 입력
+		var tag_text = $(this).text(); //넣은 글
+		var value_result = $("#search_input").val(); //들어갈 곳
+		
+		if(value_result == ''){
+	        $("#search_input").val(tag_text);
+	    } else {
+	        if (value_result.indexOf(tag_text) < 0) {   // 이문장을 추가해보세요
+	            $("#search_input").val(value_result + ' ' + tag_text);
+	        }
+	    }
+		//추가사항 : 한번 더 클릭하면 색상빠짐 + 입력된 태그도 빠짐
+	});
+	
+	$(".contenttag_Search li").on('dblclick', function() {
+		//클릭 빼는거 임시용
+		console.log("되냐?")
+		$(this).css("backgroundColor","transparent")		
+		
+	});
+	
+	
+	
+	
+	$(".content_random_tags li").on('click', function() {
+		//클릭시 색상변경
+		$(this).css("color","#3BB7FF")		
+		
+		//클릭시 태그 입력
+		var tag_text = $(this).text(); //넣은 글
+		var value_result = $("#search_input").val(); //들어갈 곳
+		
+		if(value_result == ''){
+	        $("#search_input").val(tag_text);
+	    } else {
+	        if (value_result.indexOf(tag_text) < 0) {   // 이문장을 추가해보세요
+	            $("#search_input").val(value_result + ' ' + tag_text);
+	        }
+	    }
+		//추가사항 : 한번 더 클릭하면 색상빠짐 + 입력된 태그도 빠짐
+	});
+	
+	
+
+	
+	$("#btn_search_text").click( function() {
+		$("#search_frm").load("./search/search_text.html");
+	});
+	
+	
+
+
+</script>
+
+</body>
+</html>

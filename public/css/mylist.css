@@ -1,0 +1,53 @@
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+html, body{
+    height: 100vh;
+    width: 100vw;
+    overflow-x: hidden;
+}
+body{
+    background-color: black;
+    color:white;
+    text-align: center;
+}
+.detail_popup{
+    position: absolute;
+    top:0;
+    left:17%;
+}
+
+.div_mylist{
+    padding: 9%;
+    text-align: center;
+}
+.div_mylist h1{
+    font-size: 3rem;
+    margin-bottom: 90px;
+}
+.mylist_video{
+    display: flex;
+    justify-content: space-evenly;
+    column-gap: 40px;
+
+}
+.mylist_video_item{
+    border: 1px solid rgba(255, 255, 255, 0.249);
+    flex-grow: 1;
+    flex-basis: 10rem;
+    border-radius: 4px;
+    height: 100px;
+    overflow: hidden;
+
+}
+.mylist_video_item:hover{
+    cursor: pointer;
+    border: 1.5px solid rgba(255, 255, 255, 0.613);
+}
+.mylist_video_item img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}

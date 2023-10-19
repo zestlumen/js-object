@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>search_text</title>
+<!-- 파이어베이스연결 -->
+<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- firestore 연결 -->
+<script>
+	var firebaseConfig = {
+		apiKey: "AIzaSyDUhVSDi48s2nP5ZXnYhL1VDkgPTXlYuXM",
+		authDomain: "type-object.firebaseapp.com",
+		projectId: "type-object",
+		storageBucket: "type-object.appspot.com",
+		messagingSenderId: "591050541996",
+		appId: "1:591050541996:web:cf747fc6eb0c64cf384809",
+		measurementId: "G-0ZSTMSPW1H"
+	};
+	
+	// firebase.initializeApp(firebaseConfig);
+	// firebase.analytics();
+
+	if (!firebase.apps.length) {
+		firebase.initializeApp(firebaseConfig);
+	} else {
+		firebase.app();
+	}
+	
+</script>
+</head>
+<body>
+	
+	<form id="search_frm" class="search_frm" onsubmit="return false;">
+		<button type="button" id="btn_search_tag" class="btn_search_tag"> #태그로 검색하기</button>
+		<br/>
+		<div id="search_part" class="search_part">
+			<div id="search_img_go_rt" class="search_img_go_rt">
+				<img id="mglass" class="mglass" src="./img/magnifying_glass_.svg" width="25" height="25">
+			</div>
+			<input type="text" id="search_input" class="search_input" placeholder="검색어를 입력해주세요." autocomplete='off'>		
+		</div>
+		
+		
+		
+		<hr/>
+		<div id="text_search_frm" class="text_search_frm">
+			
+			<!-- 첫화면 -->
+			<div id="realtime_search" class="realtime_search">
+				<div class="realtime_hot">실시간 인기 검색어</div>
+				<ul class="realtime_lists" id="realtime_lists">
+
+				</ul>
+			</div>
+			
+			
+			<div id="click_search" class="click_search">
+				<div id="lately_search" class="lately_search">최근 검색어</div>
+				<div class="lately_all_delete">전체 내역 삭제</div>
+				<ul class="lately_search_lists" id="lately_search_lists">
+					<!-- <li id="lately_search_list" class="lately_search_list"> 최근 검색어 x</li>
+					<li id="lately_search_list" class="lately_search_list"> 최근 검색어 x</li>
+					<li id="lately_search_list" class="lately_search_list"> 최근 검색어 x</li>
+					<li id="lately_search_list" class="lately_search_list"> 최근 검색어 x</li>
+					<li id="lately_search_list" class="lately_search_list"> 최근 검색어 x</li>
+					<li id="lately_search_list" class="lately_search_list"> 최근 검색어 x</li> -->
+					
+				</ul>
+			</div>
+			
+			
+	
+			<!-- 입력어에 따라 실시간 갱신 -->
+			<div id="input_result" class="input_result">
+				<div id="search_result" class="search_result">검색결과</div>
+				<ul class="search_result_lists" id="search_result_lists" >
+				</ul>
+			</div>
+			
+			
+			<!-- 
+				검색어 결과가 없는 경우
+				<div id="no_result" class="no_result">
+					
+					<h3>검색 결과가 없습니다.</h3>
+					
+				</div>
+				
+			-->
+		</div>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</form>
+	
+	<script>
+		var search_itmeCount=1;
+		var s_input_itmeCount=1;
+		var click_itmeCount=1;
+
+		var search_key = $("#search_text").val();
+			sessionStorage.setItem("key1", search_key);
+
+		//const db = firebase.firestore();
+		$(document).ready(function() {
+			if(search_key != ""){
+				var searchinp = sessionStorage.getItem("key1");
+				$('#search_input').attr('value',searchinp);
+	
+				$("#click_search").css("display","none");
+				$("#realtime_search").css("display","none");
+				$("#input_result").css("display","block");
+	
+				$("#search_result").text(searchinp + "의 검색결과");
+				try{
+					$("#search_result_lists").empty();
+					console.log(searchinp);
+					let input_collection = db.collection('videoList')
+
+					input_collection.get().then( (data)=>{
+						data.forEach((doc)=>{
+							inputAppend(doc.data().video_title,doc.data().video_img, doc.data().video_key);
+						})
+					})
+
+					.then(() => {
+						var input_detail=document.querySelectorAll('.lately_search_list');     
+						
+						for(var i=0;i<input_detail.length;i++){ 
+							input_detail[i].addEventListener("click", function(){
+								videodetail=videodetail*-1;
+								dv(videodetail);
+							})
+						}  
+					})
+					.catch((error) => {
+						console.error("Error writing document: ", error);
+					});
+				} catch (error) {
+					console.error(error);
+				}
+
+				//리스트 li구성하기
+				function inputAppend(title, src, key){
+					
+					for (let i = 0; i < title.length; i++) {
+						if (title[i].indexOf(searchinp) != -1) {
+							
+							var s_input_item = document.createElement('li');
+							s_input_item.id = "lately_search_list"+s_input_itmeCount;
+							s_input_item.className = "lately_search_list";
+							s_input_item.onclick = function(){
+								input_videoData(key);
+							}
+						
+							console.log(s_input_item);
+							console.log(key);
+							s_input_itmeCount += 1;
+							
+							var li_img_item = document.createElement('img');
+							li_img_item.src = src;
+							
+							s_input_item.append(li_img_item);
+							
+							document.getElementById("search_result_lists").append(s_input_item);
+							break;
+						}	 
+					}
+				}
+						
+				// if( s_input_item != null){
+				// 	console.log("불러옴");
+				// }else{
+				// 	console.log("자료못 불러옴");
+					
+				// }
+
+				
+				function input_videoData(key){
+					
+					try{
+						let input_collection = db.collection('videoList').where("video_key", "==", key);
+						input_collection.get().then( (data)=>{
+							
+							data.forEach((doc)=>{
+								console.log(doc.data().video_title);
+								
+								video_key = doc.data().video_key;
+								video_url = doc.data().video_url;
+								
+								sessionStorage.setItem("video_url", doc.data().video_url);
+								
+								document.getElementById("detail_video_preview").innerHTML = doc.data().video_preview;
+								
+								document.getElementById("span_v_year").innerText = doc.data().video_release;
+								document.getElementById("span_v_rating").innerText = doc.data().video_rating;
+								document.getElementById("div_v_contents").innerText = doc.data().video_contents;
+								
+								document.getElementById("b_v_cast").innerText = doc.data().video_cast;
+								document.getElementById("b_v_genre").innerText = doc.data().video_genre;
+								document.getElementById("b_v_tag").innerText = doc.data().video_tag;
+								
+								document.getElementById("h2_v_title").innerText = doc.data().video_title;
+								document.getElementById("b_v_title").innerText = doc.data().video_title;
+								
+									document.getElementById("b_v_director").innerText = doc.data().video_director;
+									document.getElementById("b_v_cast2").innerText = doc.data().video_cast;
+									document.getElementById("b_v_genre2").innerText = doc.data().video_genre;
+									document.getElementById("b_v_rating").innerText = doc.data().video_rating;
+								})
+					
+							})
+						.then(() => {
+						})
+						.catch((error) => {
+							console.error("Error writing document: ", error);
+						});
+					} catch (error) {
+						console.error(error);
+					}
+				}
+
+            }
+
+			try{
+				let search_collection = db.collection("searchInfo").orderBy("search_count", "desc").limit(10);;
+				
+				search_collection.get().then( (data)=>{
+					data.forEach((doc)=>{
+						searchAppend(doc.data().video_title, doc.data().video_key);
+					})
+				})
+
+				.then(() => {
+					var search_detail=document.querySelectorAll('.lately_search_list');     
+					
+					for(var i=0 ; i<=search_detail.length ; i++){ 
+						search_detail[i].addEventListener("click", function(){
+							videodetail=videodetail*-1;
+							dv(videodetail);
+						})
+					}  
+				})
+				
+				.catch((error) => {
+					console.error("Error writing document: ", error);
+				});
+				
+			} catch (error) {
+				console.error(error);
+			
+			}   
+			
+			//리스트 li구성하기
+			function searchAppend(title, key){
+				var search_item = document.createElement('li');
+				search_item.id = "realtime_list"+search_itmeCount;
+				search_item.innerHTML = search_itmeCount + "위 : " + title;
+				search_item.className = "realtime_list";
+				search_item.onclick = function(){
+					search_T_videoData(key);
+				}
+				
+				search_itmeCount += 1;
+				document.getElementById("realtime_lists").append(search_item);
+
+
+
+				function search_T_videoData(key){
+                    
+                    try{
+                        let search_collection = db.collection('videoList').where("video_key", "==", key);
+                        search_collection.get().then( (data)=>{
+                            
+                            data.forEach((doc)=>{
+                                console.log(doc.data().video_title);
+                                
+                                video_key = doc.data().video_key;
+                                video_url = doc.data().video_url;
+                                
+                                sessionStorage.setItem("video_url", doc.data().video_url);
+                                
+                                document.getElementById("detail_video_preview").innerHTML = doc.data().video_preview;
+                                
+                                document.getElementById("span_v_year").innerText = doc.data().video_release;
+                                document.getElementById("span_v_rating").innerText = doc.data().video_rating;
+                                document.getElementById("div_v_contents").innerText = doc.data().video_contents;
+                                
+                                document.getElementById("b_v_cast").innerText = doc.data().video_cast;
+                                document.getElementById("b_v_genre").innerText = doc.data().video_genre;
+                                document.getElementById("b_v_tag").innerText = doc.data().video_tag;
+                                
+                                document.getElementById("h2_v_title").innerText = doc.data().video_title;
+                                document.getElementById("b_v_title").innerText = doc.data().video_title;
+                                
+                                document.getElementById("b_v_director").innerText = doc.data().video_director;
+                                document.getElementById("b_v_cast2").innerText = doc.data().video_cast;
+                                document.getElementById("b_v_genre2").innerText = doc.data().video_genre;
+                                document.getElementById("b_v_rating").innerText = doc.data().video_rating;
+                                })
+                    
+                            })
+                            .then(() => {
+                            })
+                            .catch((error) => {
+                                console.error("Error writing document: ", error);
+                            });
+                            } catch (error) {
+                               console.error(error);
+                         }
+                 }
+
+			}
+
+
+
+
+
+		})
+		
+		$("#btn_search_tag").click( function() {
+			//태그폼으로 바꾸기
+			$("#search_frm").load("./search/search_tag.html");
+		});
+		
+		$("#search_input").click( function() {
+			//이메일 가져오기/유저 번호 가져오기 구현
+			var email_Check = "asdf@asdf.asdf";
+			var code_Check = "asdf001";
+
+			//실시간 인기 검색어에서 최근 검색어로
+			$("#realtime_search").css("display","none");
+			$("#input_result").css("display","none");
+			$("#click_search").css("display","block");
+
+			try{
+				//이건 차후에 확인 요망
+				let click_collection = db.collection("search_record").where("user_email","==",email_Check && "user_code","==",code_Check).orderBy("user_search_list", "asc")
+				
+				click_collection.get().then( (data)=>{
+					data.forEach((doc)=>{
+						clickAppend(doc.data().video_title, doc.data().video_key);
+					})
+				})
+
+				.then(() => {
+					var click_detail=document.querySelectorAll('.lately_search_list');     
+					
+					for(var i=0 ; i<=click_detail.length ; i++){ 
+						click_detail[i].addEventListener("click", function(){
+							videodetail=videodetail*-1;
+							dv(videodetail);
+						})
+					}  
+				})
+				
+				.catch((error) => {
+					console.error("Error writing document: ", error);
+				});
+				
+			} catch (error) {
+				console.error(error);
+			
+			}   
+
+
+			function clickAppend(title, key){
+				var click_item = document.createElement('li');
+				click_item.id = "lately_search_list"+click_itmeCount;
+				click_item.innerHTML = title;
+				click_item.className = "lately_search_list";
+				click_item.onclick = function(){
+					click_videoData(key);
+				}
+				
+				click_itmeCount += 1;
+				document.getElementById("lately_search_lists").append(click_item);
+
+
+
+				function click_videoData(key){
+                    
+                    try{
+                        let search_collection = db.collection('videoList').where("video_key", "==", key);
+                        search_collection.get().then( (data)=>{
+                            
+                            data.forEach((doc)=>{
+                                console.log(doc.data().video_title);
+                                
+                                video_key = doc.data().video_key;
+                                video_url = doc.data().video_url;
+                                
+                                sessionStorage.setItem("video_url", doc.data().video_url);
+                                
+                                document.getElementById("detail_video_preview").innerHTML = doc.data().video_preview;
+                                
+                                document.getElementById("span_v_year").innerText = doc.data().video_release;
+                                document.getElementById("span_v_rating").innerText = doc.data().video_rating;
+                                document.getElementById("div_v_contents").innerText = doc.data().video_contents;
+                                
+                                document.getElementById("b_v_cast").innerText = doc.data().video_cast;
+                                document.getElementById("b_v_genre").innerText = doc.data().video_genre;
+                                document.getElementById("b_v_tag").innerText = doc.data().video_tag;
+                                
+                                document.getElementById("h2_v_title").innerText = doc.data().video_title;
+                                document.getElementById("b_v_title").innerText = doc.data().video_title;
+                                
+                                document.getElementById("b_v_director").innerText = doc.data().video_director;
+                                document.getElementById("b_v_cast2").innerText = doc.data().video_cast;
+                                document.getElementById("b_v_genre2").innerText = doc.data().video_genre;
+                                document.getElementById("b_v_rating").innerText = doc.data().video_rating;
+                                })
+                    
+                            })
+                            .then(() => {
+                            })
+                            .catch((error) => {
+                                console.error("Error writing document: ", error);
+                            });
+                            } catch (error) {
+                               console.error(error);
+                         }
+                 }
+
+			}
+
+		})
+		
+		$("#search_img_go_rt").click( function() {
+			//최근 검색어에서 실시간 인기 검색어로
+			$("#click_search").css("display","none");
+			$("#input_result").css("display","none");
+			$("#realtime_search").css("display","block");
+		});
+		
+		
+		$("#search_input").ready( function() {
+			//실시간 검색으로 이동
+			$("#search_input").change( function() {
+				$("#click_search").css("display","none");
+				$("#realtime_search").css("display","none");
+				$("#input_result").css("display","block");
+				
+				//입력시 업데이트됨
+				var text_update = $( '#search_input' ).val();
+				$("#search_result").text(text_update + "의 검색결과");
+				
+				//+추가사항 : 검색된 자료에 맞춰자료 뿌리기 + 검색결과 없음 버전 만들기.
+				
+				
+				//검색결과
+				try{
+					$("#search_result_lists").empty();
+					console.log(text_update);
+					let input_collection = db.collection('videoList')
+
+					input_collection.get().then( (data)=>{
+						data.forEach((doc)=>{
+						inputAppend(doc.data().video_title,doc.data().video_img, doc.data().video_key);
+						})
+					})
+
+					.then(() => {
+						var input_detail=document.querySelectorAll('.lately_search_list');     
+						
+						for(var i=0;i<input_detail.length;i++){ 
+							input_detail[i].addEventListener("click", function(){
+								videodetail=videodetail*-1;
+								dv(videodetail);
+							})
+						}  
+					})
+					.catch((error) => {
+						console.error("Error writing document: ", error);
+					});
+				} catch (error) {
+					console.error(error);
+				}
+
+				//리스트 li구성하기
+				function inputAppend(title, src, key){
+					
+					for (let i = 0; i < title.length; i++) {
+						if (title[i].indexOf(text_update) != -1) {
+							
+							var s_input_item = document.createElement('li');
+							s_input_item.id = "lately_search_list"+s_input_itmeCount;
+							s_input_item.className = "lately_search_list";
+							s_input_item.onclick = function(){
+								input_videoData(key);
+							}
+						
+							console.log(s_input_item);
+							console.log(key);
+							s_input_itmeCount += 1;
+							
+							var li_img_item = document.createElement('img');
+							li_img_item.src = src;
+							
+							s_input_item.append(li_img_item);
+							
+							document.getElementById("search_result_lists").append(s_input_item);
+							break;
+						}	 
+					}
+				}
+						
+				// if( s_input_item != null){
+				// 	console.log("불러옴");
+				// }else{
+				// 	console.log("자료못 불러옴");
+					
+				// }
+
+				
+				function input_videoData(key){
+					
+					try{
+						let input_collection = db.collection('videoList').where("video_key", "==", key);
+						input_collection.get().then( (data)=>{
+							
+							data.forEach((doc)=>{
+								console.log(doc.data().video_title);
+								
+								video_key = doc.data().video_key;
+								video_url = doc.data().video_url;
+								
+								sessionStorage.setItem("video_url", doc.data().video_url);
+								
+								document.getElementById("detail_video_preview").innerHTML = doc.data().video_preview;
+								
+								document.getElementById("span_v_year").innerText = doc.data().video_release;
+								document.getElementById("span_v_rating").innerText = doc.data().video_rating;
+								document.getElementById("div_v_contents").innerText = doc.data().video_contents;
+								
+								document.getElementById("b_v_cast").innerText = doc.data().video_cast;
+								document.getElementById("b_v_genre").innerText = doc.data().video_genre;
+								document.getElementById("b_v_tag").innerText = doc.data().video_tag;
+								
+								document.getElementById("h2_v_title").innerText = doc.data().video_title;
+								document.getElementById("b_v_title").innerText = doc.data().video_title;
+								
+									document.getElementById("b_v_director").innerText = doc.data().video_director;
+									document.getElementById("b_v_cast2").innerText = doc.data().video_cast;
+									document.getElementById("b_v_genre2").innerText = doc.data().video_genre;
+									document.getElementById("b_v_rating").innerText = doc.data().video_rating;
+								})
+					
+							})
+						.then(() => {
+						})
+						.catch((error) => {
+							console.error("Error writing document: ", error);
+						});
+					} catch (error) {
+						console.error(error);
+					}
+				}
+			
+			});
+		
+		})
+		
+		</script>
+		<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+
+</body>
+</html>

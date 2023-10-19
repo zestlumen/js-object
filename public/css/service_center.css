@@ -1,0 +1,152 @@
+@charset "UTF-8";
+*{
+	padding:0;
+	margin:0;
+	box-sizing: border-box;
+	text-decoration: none;
+	list-style:none;
+}
+html, body{
+    height: 100%;
+    width: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	background-color: rgba(0, 0, 0, 0.589);
+}
+
+
+
+.main > .header {
+	padding:35px 0px;
+	color: #fff;
+	z-index: 10;
+	position:fixed;
+	width: 100%;
+	height: 230px;
+	background-color: #141517;
+	top: 0px;
+	
+}
+
+
+.main > .header  > .logo > .logo_img{
+	height: 60px;
+	width: 60px;
+    margin-top: -13px;
+    margin-left: 30px;
+	position: absolute;
+}
+
+
+.main > .header > .user{ 
+	float: right;	
+	margin-right: 60px;
+	margin-top:45px;
+	position:relative;
+	font-size: 1.2rem;
+	
+}	
+
+
+
+
+
+.main > .header > .service_text_in{
+	text-align: center;
+}
+
+.main > .header > .service_text_in > .service_text{
+	margin: 5px auto;
+	font-size: 1.2rem;
+	height: 50px;
+	width: 600px;
+	border-radius: 3px;
+	padding: 10px;
+	
+}
+
+.main > .header > .service_text_h{
+	text-align: center;
+	margin-top:30px;
+	left: 50%
+	
+}
+
+.main > .header h3{
+	font-size: 2.2rem;
+	margin: 10px auto;
+	width: 400px;
+	text-align: center;
+	
+}
+
+
+
+.main > .FAQ_frm{
+	padding:30px 0px;
+	z-index: 0;
+	min-height: 500px;
+	height: 100%;
+	margin-top: 250px;
+}
+
+.main > .FAQ_frm > h3{
+	
+	position:relative;	
+	margin : 20px auto;
+	text-align: center;
+	font-size: 1.7rem;
+	color:rgb(112, 157, 248);
+}
+
+
+.main > .FAQ_frm > .FAQs{
+	margin: 0px auto;
+	width: 1050px;
+}
+
+
+.main > .FAQ_frm > .FAQs ul{
+	display:flex;
+	width: 1000px;
+	height: 450px;
+	margin: 0px auto;
+	padding: 10px;
+	flex-wrap : wrap;
+}
+.main > .FAQ_frm > .FAQs > ul  li{
+	display:inline-block;
+	min-width: 450px;
+	max-height: 100px;
+	background-color: #141517;
+	border-radius: 25px;
+	margin: 10px auto;
+	color: #fff;
+	font-size: 1.2rem;
+	text-align: center;
+	padding: 35px;
+
+}
+
+.main > .FAQ_frm > .FAQs > ul  li:hover{
+	cursor: pointer;
+	background-color:rgb(112, 157, 248);
+}
+
+.one_on_one{
+	font-size: 1.3rem;
+	color: #919191;	
+	margin-left: 30px;
+	cursor: pointer;
+}
+
+#footer{
+	width: 100%;
+	height: 100px;
+	background-color: #141517;
+	text-align: center;
+	bottom: 0;
+	color: #fff;
+	position:fixed;
+	padding: 2rem;
+}

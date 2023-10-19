@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>비밀번호 찾기-오브젝트</title>
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+	<link rel='stylesheet' href='./css/loginout.css'>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.css"
+		integrity="sha512-1hsteeq9xTM5CX6NsXiJu3Y/g+tj+IIwtZMtTisemEv3hx+S9ngaW4nryrNcPM4xGzINcKbwUJtojslX2KG+DQ=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<script src='./js/loginout.js'></script>
+	<!-- 파이어베이스연결 -->
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+
+	<!-- firestore 연결 -->
+	<script>
+		var firebaseConfig = {
+			apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+			authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+			projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+			storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+			messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+			appId: process.env.REACT_APP_APP_ID,
+			measurementId: process.env.REACT_APP_MEASUREMENT_ID,
+		};
+
+		firebase.initializeApp(firebaseConfig);
+		firebase.analytics();
+	</script>
+	<script>
+		window.onload = function () {
+			document.getElementById('btn_find_pwd').addEventListener("click", function () {
+				location.href = "./login_form.html";
+			})
+			document.getElementById('back').addEventListener("click", function () {
+				location.href = "./login_form.html";
+			})
+		}
+
+	</script>
+
+</head>
+
+<body>
+	<!-- 비번찾기-->
+	<form id="loginout_form" class="loginout_form">
+		<i id="back" class="fa-solid fa-circle-chevron-left fa-2x"></i>
+		<h3> 비밀번호 찾기 </h3>
+		<div id="pwd_form" class="pwd_form">
+			<input type="text" class="em_text" id="em_text" value="" autocomplete="email" placeholder="이메일">
+			<br />
+		</div>
+		<div class="text_pwdf">가입하신 이메일 주소를 입력해 주시면 비밀번호가 메일로 발송됩니다.</div>
+		<br />
+		<button type="button" id="btn_find_pwd" class="btn_loginout"> 이메일 발송 </button>
+	</form>
+
+</body>
+
+</html>

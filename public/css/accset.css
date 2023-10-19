@@ -1,0 +1,145 @@
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    
+}
+html, body{
+    height: 100vh;
+    width: 100vw;
+    overflow-x: hidden;
+    
+}
+body{
+    background-color: black;  
+    color:white;
+}
+ul{
+    list-style: none;
+}
+.accset_body{
+    padding: 10%;
+}
+.accset_content{
+    border: 0.1px solid #89898a;
+    border-radius: 20px;
+    background-color:#1b1b1c;
+    margin-top:2%;
+}
+.accset_content3{
+    line-height: 40px;
+}
+.accset_header{
+    padding: 20px;
+}
+header{
+    border-radius: 20px 20px 0 0 ;
+}
+
+input{
+    color:#0080ff;
+    border:none;
+    background-color: transparent;
+}
+
+header{
+    background-color: #29292a;
+    padding: 2% 3%;
+}
+ul{
+    padding:3%;
+}
+li{
+    padding:10px;
+}
+.profile img{
+    width:100px;
+}
+.faicon{
+    font-family: FontAwesome;
+}
+.paynaccess_access,.paynaccess_pay, .profiledetail{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+input[type=button]:hover{
+    cursor: pointer;
+    
+}
+.profile li{
+    transition: transform 0.2s ease-in-out;
+}
+.profile li:hover{
+    background-color: rgba(39, 39, 39, 0.774);
+    cursor: pointer;
+    padding: 40px;
+    border-radius: 4px;
+    transform: scale(1.05);
+}
+.profiledetail b{
+    margin-left: -80%;
+}
+.li_alert_set{
+    display: flex;
+}
+.toggle_switch{
+    display: block;
+    position: relative;
+    width: 3rem;
+    margin: 0.5rem 0 0 1rem; 
+    height: 1.8rem;
+    border-radius: 1rem;
+    background-color: white;
+    cursor: pointer; 
+}
+.div_paynaccess_access_now{
+    margin-left: -33%;
+}
+.toggle_switch .toggle_btn {
+    width:1.3rem;
+    height: 1.3rem;
+    position: absolute;
+    top:50%;
+    left:.1rem;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background-color: #0080ff;
+}
+#alert_toggle:checked ~ .toggle_switch {
+    background: #0080ff;
+}
+#alert_toggle:checked ~ .toggle_switch .toggle_btn {
+    left: calc(100% - 1.6rem);
+    background: #fff;
+}
+.toggle_switch, .toggle_btn {
+    transition: all 0.2s ease-in-out;
+}
+.accset_content li a:hover{
+    cursor: pointer;
+    border-bottom: 2px solid white;
+}
+.accset_content2 .faicon, .paynaccess .faicon{
+    margin-top: 15px;
+    border-bottom: 2px solid transparent;
+    font-size: 16px;
+}
+.accset_content2 .faicon:hover, .paynaccess .faicon:hover{
+    display: inline-block;
+    border-bottom: 2px solid #0080ff;
+}
+.paynaccess_pay div{
+    text-align: right;
+
+}
+.accset_content2 .now_email{
+    font-size: 22px;
+}
+
+.accset_link {
+	text-decoration: none;
+	color: #fff;
+}
+

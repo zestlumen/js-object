@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<link rel = "styLesheet" href= "../css/search.css" >
+	</head>
+	<body>
+		<form id="search_frm" class="search_frm" onsubmit="return false;">
+			<button type="button" id="btn_search_text" class="btn_search_text"> #검색어로 검색하기</button>
+			<br/>
+			<div id="search_part" class="search_part">
+				<div id="search_img" class="search_img">
+					<img id="mglass" class="mglass" src="./img/magnifying_glass_.svg" width="25" height="25">
+				</div>
+				<input type="text" id="search_input" class="search_input" placeholder="태그를 선택해주세요." autocomplete='off'>
+			</div>
+			
+			<hr/>
+
+			
+			<ul id="content_random_tags" class="content_random_tags">
+			</ul>
+
+			<div id="contenttag_Searchs" class="contenttag_Searchs">
+				<ul id= "contenttag_Search" class="contenttag_Search" >
+		
+				</ul>
+			</div>
+		
+			
+			<!-- 검색결과 -->
+			<div id="tag_result" class="tag_result">
+			
+				<!-- and 영역 -->
+				<div id="and_tag_items" class="and_tag_items">
+					<ul id="and_list_publicity" class="list_publicity" >
+
+					</ul>
+				</div>
+	
+				<!-- or 영역 -->
+				<div id="or_search_result" class="or_search_result">이 작품은 어떠신가요?</div>
+				<div id="or_search_items" class="or_search_items">
+					<ul id="or_list_publicity" class="list_publicity" >
+
+					</ul>
+				</div>
+				
+				
+			</div>
+		</form>
+		
+		<script>
+
+		
+			var tag_Count = 0;
+			var tag_arrays=[];
+			//var tag_list=[];
+			var tag_item=[];
+			var andor_Count = [];
+			var and_sno= 0;
+			var or_sno= 0;
+			var or_Count = [];
+		
+			$(document).ready(function() {
+				
+				try{
+					let tags = db.collection("videoList").orderBy("video_tag", "asc").limit(30);
+		
+					tags.get().then( (data)=>{
+						data.forEach((doc)=>{
+							tagAppend(doc.data().video_tag);
+						})
+					})
+					
+					.catch((error) => {
+						console.error("Error writing document: ", error);
+					});
+					
+				} catch (error) {
+					console.error(error);
+				}	
+				
+				function tagAppend(tag){
+					var tag_array = [tag].flat();
+					var tag_item = document.createElement('li');
+		
+					for(var i = 0 ; i<tag_array.length ; i++){
+						tag_item.id = "contenttag"+tag_Count;
+						tag_item.innerHTML = tag_array[i];
+						tag_item.className = "contenttag";
+		
+						tag_item.onclick = function(){
+							var tag_text = "#" + $(tag_item).text() + " "; //넣은 글
+							var value_result = $("#search_input").val(); //들어갈 곳
+		
+							if(value_result.indexOf(tag_text) < 0) {
+								tag_item.style.backgroundColor = "#3BB7FF";
+		
+								if(value_result == ''){
+									$("#search_input").val(tag_text);
+									andor_Count.push(tag_item.innerHTML);
+									console.log(andor_Count);
+		
+								} else {
+									if (value_result.indexOf(tag_text) < 0) {   // 이문장을 추가해보세요
+										$("#search_input").val(value_result + tag_text);
+										//console.log(tag_item.innerHTML);
+										andor_Count.push(tag_item.innerHTML);
+										console.log(andor_Count);
+									}
+								}
+		
+							}else{
+								tag_item.style.backgroundColor = "transparent";
+								value_result = value_result.replace(tag_text,"");
+		
+								var delete_tag = andor_Count.indexOf(tag_item.innerHTML);
+								//.push(tag_item.innerHTML);
+								console.log(delete_tag);
+								var delete_af = andor_Count.splice(delete_tag,1);
+								console.log(andor_Count);
+		
+								$("#search_input").val(value_result)
+							}
+						}
+		
+					tag_Count += 1;
+					document.getElementById("contenttag_Search").append(tag_item);
+					}
+				}
+				
+		
+		
+				
+				//랜덤 태그
+				try{
+					let tags = db.collection("videoList").orderBy("video_tag","desc").limit(6);
+		
+					tags.get().then( (data)=>{
+						data.forEach((doc)=>{
+							R_tagAppend(doc.data().video_tag);
+						})
+					})
+					
+					.catch((error) => {
+						console.error("Error writing document: ", error);
+					});
+					
+				} catch (error) {
+					console.error(error);
+				}	
+				
+				function R_tagAppend(tag){
+					var R_tag_array = [tag].flat();
+					var R_tag_item = document.createElement('li');
+						for(var i = 0 ; i<R_tag_array.length ; i++){
+							R_tag_item.id = "content_random_tag"+tag_Count;
+						R_tag_item.innerHTML = "#" + R_tag_array[i];
+						R_tag_item.className = "content_random_tag";
+						
+						R_tag_item.onclick = function(){
+							var R_tag_text = $(R_tag_item).text() + " "; //넣은 글
+							var R_value_result = $("#search_input").val(); //들어갈 곳
+							
+							if(R_value_result.indexOf(R_tag_text) < 0) {
+								R_tag_item.style.backgroundColor = "#3BB7FF";
+		
+								if(R_value_result == ''){
+									$("#search_input").val(R_tag_text);
+		
+									var R_tag_item2 = R_tag_item.innerHTML.replace("#","");
+									andor_Count.push(R_tag_item2);
+									console.log(andor_Count);
+									
+								} else {
+									if (R_value_result.indexOf(R_tag_text) < 0) {   // 이문장을 추가해보세요
+										$("#search_input").val(R_value_result + R_tag_text);
+		
+										var R_tag_item2 = R_tag_item.innerHTML.replace("#","");
+										andor_Count.push(R_tag_item2);
+										console.log(andor_Count);
+									}
+								}
+								
+							}else{
+								R_tag_item.style.backgroundColor = "transparent";
+								R_value_result = R_value_result.replace(R_tag_text,"");
+								$("#search_input").val(R_value_result)
+		
+								var R_tag_item2 = R_tag_item.innerHTML.replace("#","");
+								var delete_tag = andor_Count.indexOf(R_tag_item2);
+								//.push(tag_item.innerHTML);
+								console.log(delete_tag);
+								var delete_af = andor_Count.splice(delete_tag,1);
+								console.log(andor_Count);
+							}
+						}
+		
+					}
+					tag_Count += 1;
+					document.getElementById("content_random_tags").append(R_tag_item);
+					
+				}
+			
+			})
+			
+		
+			$("#btn_search_text").click( function() {
+				$("#search_frm").load("./search/search_text.html");
+			});
+		
+			$(document).on("click","#content_random_tags li" , function() {
+				click_tag();
+			})
+			$(document).on("click","#contenttag_Search li" , function() {
+				click_tag();
+			})
+		
+		
+			function click_tag(){
+			//클릭시 이벤트
+				$("#and_list_publicity").empty();
+				$("#or_list_publicity").empty();
+				document.getElementById("or_search_result").style.display="block";
+				
+				try{
+					let tags_list = db.collection("videoList").orderBy("video_tag", "asc");
+		
+					tags_list.get().then( (data)=>{
+						data.forEach((doc)=>{
+							tag_and_list(doc.data().video_img, doc.data().video_key, doc.data().video_tag);
+						})
+					})
+		
+					.then(() => {
+						var input_detail=document.querySelectorAll('.or_item');     
+						
+						for(var i=0;i<input_detail.length;i++){ 
+							input_detail[i].addEventListener("click", function(){
+								videodetail=videodetail*-1;
+								dv(videodetail);
+							})
+						}  
+		
+						var input_detail=document.querySelectorAll('.and_item');     
+						
+						for(var i=0;i<input_detail.length;i++){ 
+							input_detail[i].addEventListener("click", function(){
+								videodetail=videodetail*-1;
+								dv(videodetail);
+							})
+						}  
+					})
+					
+					.catch((error) => {
+						console.error("Error writing document: ", error);
+					});
+					
+					} catch (error) {
+						console.error(error);
+					}	
+		
+
+				function tag_and_list(src, key, tag){
+					var tag_array = [tag].flat();
+					var or_search = tag_array.filter(x => andor_Count.includes(x));
+
+					if (or_search?.length) {
+		
+						
+						console.log(or_search);
+						var or_items = document.createElement('li');
+						or_items.id = "or_item"+or_sno;
+						or_items.className = "or_item";
+						or_items.onclick = function(){
+							videoData(key)
+						}
+						
+						or_sno += 1;
+						
+						var or_img_item = document.createElement('img');
+						or_img_item.src = src;
+						
+						or_items.append(or_img_item);
+						
+						document.getElementById("or_list_publicity").append(or_items);
+						
+					}
+					console.log(or_list_publicity.length);
+
+		
+					var and_search = andor_Count.filter(x => !tag_array.includes(x));
+
+					if (and_search.length === 0 ) {
+						console.log(and_search);
+						var and_items = document.createElement('li');
+						and_items.id = "and_item"+and_sno;
+						and_items.className = "and_item";
+						and_items.onclick = function(){
+							videoData(key)
+						}
+						
+						and_sno += 1;
+						
+						var and_img_item = document.createElement('img');
+						and_img_item.src = src;
+						
+						and_items.append(and_img_item);
+						
+						document.getElementById("and_list_publicity").append(and_items);
+					}
+
+					
+				}
+		
+			}
+			
+
+		</script>
+
+	</body>
+</html>

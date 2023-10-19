@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>홈-오브젝트</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.css"
+        integrity="sha512-1hsteeq9xTM5CX6NsXiJu3Y/g+tj+IIwtZMtTisemEv3hx+S9ngaW4nryrNcPM4xGzINcKbwUJtojslX2KG+DQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel='stylesheet' href='./css/main.css'>
+    <link rel="styLesheet" href="./css/search.css">
+    <link rel="styLesheet" href="./css/video_detail.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <!-- 파이어베이스연결 -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+
+    <!-- firestore 연결 -->
+    <script>
+
+        var firebaseConfig = {
+            apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+            authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+            projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+            storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+            messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+            appId: process.env.REACT_APP_APP_ID,
+            measurementId: process.env.REACT_APP_MEASUREMENT_ID,
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+
+        var db = firebase.firestore();
+
+    </script>
+    <script src='./js/main.js'></script>
+</head>
+
+<body>
+    <div id="main" class="main">
+        <header id='header' class="header">
+            <div id="category_hidden" class="category_hidden"></div>
+            <div id="category" class="category">
+                <h3> 카테고리 </h3>
+                <nav id="content_lists" class="content_lists">
+                    <input type="button" id="cate_kor_movie" value="한국 영화"><br />
+                    <input type="button" id="cate_other_movie" value="해외 영화"><br />
+                    <input type="button" id="cate_kor_drama" value="한국 드라마"><br />
+                    <input type="button" id="cate_other_drama" value="해외 드라마"><br />
+                    <input type="button" id="cate_entertainment" value="예능"><br />
+                    <input type="button" id="cate_documentary" value="다큐멘터리"><br />
+                    <input type="button" id="cate_amimation" value="애니메이션"><br />
+                </nav>
+            </div>
+            <a class="logo" href="./main.html">
+                <img id="logo_img" class="logo_img" src="./img/object_logo.png" width="40" height="40">
+            </a>
+            <div class="main_my">
+                <input type="button" id="main_btn_category" value="CATEGORY"></li>
+                <!-- <input type="button" id="main_btn_mylist" value="MY"></li> -->
+                <!-- <input type="button" id="main_btn_mypage" value="MY"></li> -->
+            </div>
+
+            <div id="btn_user_menu" class="user">
+                <img id="img_user" src="img/pro1.jpg" style="width: 39px; border-radius: 50%;">
+                <div class="user_menu" id="user_menu">
+                    <ul class="user_menu_box">
+                        <li>
+                            <!-- <img src="#"> -->
+                            <input type="button" id="toggle_user1" class="btn_user_menu_box"
+                                onclick="main_btn_username(1)" value="">
+                        </li>
+                        <li>
+                            <!-- <img src="#"  > -->
+                            <input type="button" id="toggle_user2" class="btn_user_menu_box"
+                                onclick="main_btn_username(2)" value="">
+                        </li>
+                        <li>
+                            <!-- <img src="#"> -->
+                            <input type="button" id="toggle_user3" class="btn_user_menu_box"
+                                onclick="main_btn_username(3)" value="">
+                        </li>
+                        <li>
+                            <!-- <img src="#"> -->
+                            <input type="button" id="toggle_user4" class="btn_user_menu_box"
+                                onclick="main_btn_username(4)" value="">
+                        </li>
+                        <li><input type="button" class="btn_user_menu_box blue" id="main_btn_accset" value="계정&설정"></li>
+                        <li><input type="button" class="btn_user_menu_box blue" id="main_btn_logout" value="LOGOUT">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="search" class="search">
+                <input type="text" id="search_text" class="search_text" autocomplete="off">
+                <div id="search_img" class="search_img">
+                    <img id="mglass" class="mglass" src="./img/magnifying_glass_.svg" width="25" height="25">
+                </div>
+            </div>
+
+            <div id="search_bc_hidden" class="search_bc_hidden"></div>
+            <div id="search_hidden" class="search_hidden">
+                <input type="button" value="x" id="search_x" class="search_x">
+                <div id="search_hidden_frm" class="search_hidden_frm"></div>
+            </div>
+        </header>
+
+        <div id="home_main_list_hidden" class="home_main_list_hidden"></div>
+        <div id="home_main_list" class="home_main_list">
+            <div id='detail_popup' class='detail_popup'>
+                <div class='detail_popup_main'>
+                    <div id="detail_video_preview"></div>
+                    <!-- 이미지로할경우 -->
+                    <!-- <div style="width: 100%; height: 428px; overflow: hidden; margin: 0 auto;
+                            <img id="img_test" src="#" style="width: 100%; height: 100%; object-fit: cover; object-position: top;"> 
+                        </div> -->
+                    <div>
+                        <i class="fa-solid fa-circle-xmark fa-2x" onclick="back()"></i>
+                        <input type="button" id="btn_detail_video_play" class="btn_main_play faicon"
+                            value="&#xf04b; 재생">
+                        <div class="play_side_icon2">
+                            <div id="icon_heart" onclick="heart()">
+                                <i class="fa-regular fa-heart fa-2x"></i>
+                            </div>
+                            <div id="icon_thumb" onclick="thumb()">
+                                <i class="fa-regular fa-thumbs-up fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='detail_popup_info'>
+                    <div class="detail_popup_info_left">
+                        <div class="detail_popup_info_left_text1">
+                            <span id="span_v_year" class="detail_popup_info_leftyear"></span>
+                            <span id="span_v_rating" class="detail_popup_info_rating"></span>
+                            <span class="detail_popup_info_epicnt">에피소드12개</span>
+                            <span class="detail_popup_info_resolutionr">HD</span>
+                        </div>
+                        <div id="div_v_contents" class="detail_popup_info_left_text2"></div>
+                    </div>
+                    <div></div>
+                    <div class='detail_popup_info_right'>
+                        <span>출연:</span><b id="b_v_cast" class="b_v_cast"></b>
+                        <button class="btn_cast_more" onclick="gobottom()">더 보기</button>
+                        <br>
+                        <span>장르:</span><b id="b_v_genre" class="b_v_genre"></b><br>
+                        <br>
+                        <span>시리즈 특징:</span><b id="b_v_tag" class="b_v_tag"></b>
+                    </div>
+                </div>
+                <div class='detail_popup_episode' id="detail_popup_episode">
+                    <div class="detail_popup_episode_head">
+                        <h2 id="h2_v_title"></h2>
+                    </div>
+                    <hr>
+
+
+                    <!--                         
+                        <div class="detail_popup_episode_list">
+                            <span class="epi_cnt">1</span>
+                            <div class="epi_cnt_img_all">
+                                <img class="epi_img" src="img/exam_epi.jpg">
+                                <i id="epi_cnt_playicon " class="fa-regular fa-circle-play fa-3x"></i>
+                            </div>
+                            <div class="epi_info" >
+                                <span>1화</span>
+                                <span>60분</span>
+                                <div class="epi_info2">아나운서 지망생 김혜자. 취직은커녕 교내 방송을 벗어나지 못한다. 좋아하는 선배 얼굴 보러 참석한 MT에서는 처음 보는 남자한테 쓴소리만 듣고. 잠깐, 당신 이 동네 살아?</div>
+                            </div>
+                        </div> -->
+
+
+                    <!-- 
+                        <div class="detail_popup_episode_list">
+                            <span class="epi_cnt">2</span>
+                            <div class="epi_cnt_img_all">
+                                <img class="epi_img" src="img/exam_epi.jpg">
+                                <div>
+                                    <i id="epi_cnt_playicon" class="fa-regular fa-circle-play fa-3x"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="epi_info" >
+                                <div class="epi_info1">
+                                    <span>1화</span>
+                                    <span>60분</span>
+                                </div>
+                                <div class="epi_info2">아나운서 지망생 김혜자. 취직은커녕 교내 방송을 벗어나지 못한다. 좋아하는 선배 얼굴 보러 참석한 MT에서는 처음 보는 남자한테 쓴소리만 듣고. 잠깐, 당신 이 동네 살아?</div>
+                            </div>
+                        </div>
+                        <div class="detail_popup_episode_list">
+                            <span class="epi_cnt">3</span>
+                            <div class="epi_cnt_img_all">
+                                <img class="epi_img" src="img/exam_epi.jpg">
+                                <div>
+                                    <i id="epi_cnt_playicon" class="fa-regular fa-circle-play fa-3x"></i>
+                                </div>
+                            </div>
+                            <div class="epi_info" >
+                                <div class="epi_info1">
+                                    <span>1화</span>
+                                    <span>60분</span>
+                                </div>
+                                <div class="epi_info2">아나운서 지망생 김혜자. 취직은커녕 교내 방송을 벗어나지 못한다. 좋아하는 선배 얼굴 보러 참석한 MT에서는 처음 보는 남자한테 쓴소리만 듣고. 잠깐, 당신 이 동네 살아?</div>
+                            </div>
+                        </div> -->
+                    <!-- <div class="detail_popup_episode_list">
+                            <span class="epi_cnt">4</span>
+                            <div class="epi_cnt_img_all">
+                                <img class="epi_img" src="img/exam_epi.jpg">
+                                <div>
+                                    <i id="epi_cnt_playicon" class="fa-regular fa-circle-play fa-3x"></i>
+                                </div>
+                            </div>
+                            <div class="epi_info" >
+                                <div class="epi_info1">
+                                    <span>1화</span>
+                                    <span>60분</span>
+                                </div>
+                                <div class="epi_info2">아나운서 지망생 김혜자. 취직은커녕 교내 방송을 벗어나지 못한다. 좋아하는 선배 얼굴 보러 참석한 MT에서는 처음 보는 남자한테 쓴소리만 듣고. 잠깐, 당신 이 동네 살아?</div>
+                            </div>
+                        </div> -->
+                </div>
+                <div class="detail_popup_recommend" id="detail_popup_recommend">
+                    <h3>요즘 가장 인기있는 콘텐츠</h3>
+                    <div class="detail_popup_recommend_container" id="detail_popup_recommend_container">
+                        <!-- <div class="recommend_item">
+                                <div class="recommend_img_all">
+                                    <img class="recommend_img" src="img/11_Flipped.jpg">
+                                    <div>
+                                        <i class="recommend_playicon fa-regular fa-circle-play fa-4x"></i>
+                                    </div>
+                                </div>
+                               
+                            </div>  -->
+                    </div>
+                </div>
+                <div class="detail_popup_detail_info">
+                    <div> <b id="b_v_title"></b> 상세 정보</div>
+                    <span class="spna_info_softly">크리에이터:</span><b id="b_v_director"></b><br>
+                    <span class="spna_info_softly">출연:</span><b id="b_v_cast2"></b><br>
+                    <span class="spna_info_softly">장르:</span><b id="b_v_genre2"></b><br>
+                    <span class="spna_info_softly">관람등급:</span><b id="b_v_rating"></b><br>
+                    <b>2022.07.04</b>
+                </div>
+            </div>
+        </div>
+
+        <div id="main_frm" class="main_frm">
+            <form id="main_screen" class="main_screen">
+                <div id="main_publicity" class="main_publicity">
+                    <div class="publicity">
+                        <div id="publicity_text" class="publicity_text">우리들의 블루스</div>
+                        <!-- <div id="My_list_add" class="My_list_add">
+                                +
+                            </div> -->
+                        <!-- <div id="like_img" class="like_img">
+                                좋아요
+                            </div> -->
+                        <div id="content_des" class="content_des">
+                            사랑은 달콤하면서도 씁쓸하고, 인생은 좋을 때도 슬플 때도 있는 법.<br>
+                            바쁘게 돌아가는 섬 제주에서 하루하루 살아가는 우리들의 이야기가 펼쳐진다.
+                        </div>
+                        <div>
+                            <input type="button">
+                            <input type="button" id="icon_publicity_text_play" class="icon_publicity_text_play faicon"
+                                value="&#xf04b; 재생">
+                            <input type="button" id="icon_publicity_text_detail"
+                                class="icon_publicity_text_detail faicon" value="&#xf06a; 상세 정보">
+                        </div>
+                    </div>
+                    <div class="content_ex">
+                        <div id="content_ex_video" class="content_ex_video">
+                            <img id="ex_imgS" class="ex_imgS">
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div id="sub_publicity" class="sub_publicity">
+                    <div class="items">
+                        <div id="item_text1" class="item_text">한국 영화 / 해외 영화</div>
+                        <ul id="ul_cateList1">
+                            <!-- <li id="item1" class="item" ><img src=""></li>
+                                <li id="item2" class="item" ><img src=""></li>
+                                <li id="item3" class="item" ><img src=""></li>
+                                <li id="item4" class="item" ><img src=""></li>
+                                <li id="item5" class="item" ><img src=""></li> -->
+                        </ul>
+                        <div id="item_text2" class="item_text">한국 드라마 / 해외 드라마</div>
+                        <ul id="ul_cateList2">
+                            <!-- <li id="item6" class="item" ><img src=""></li>
+                                <li id="item7" class="item" ><img src=""></li>
+                                <li id="item8" class="item" ><img src=""></li>
+                                <li id="item9" class="item" ><img src=""></li>
+                                <li id="item10" class="item" ><img src=""></li> -->
+                        </ul>
+                        <div id="item_text3" class="item_text">애니메이션</div>
+                        <ul id="ul_cateList3">
+                            <!-- <li id="item11" class="item" ><img src=""></li>
+                                <li id="item12" class="item" ><img src=""></li>
+                                <li id="item13" class="item" ><img src=""></li>
+                                <li id="item14" class="item" ><img src=""></li>
+                                <li id="item15" class="item" ><img src=""></li> -->
+                        </ul>
+                    </div>
+                </div>
+                <div style="margin-top: 5%;">
+                    <footer id="footer">
+                        (주)TypeObject<br />
+                        제작 : 김다영, 김채현<br />
+                        tel : 010-0000-0000<br />
+                        주소 : 서울특별시 관악구 남부순환로
+                    </footer>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

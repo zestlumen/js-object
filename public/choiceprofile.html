@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>프로필 선택-오브젝트</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/choiceprofile.css'>
+    <!-- 파이어베이스연결 -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+
+    <!-- firestore 연결 -->
+    <script>
+        var firebaseConfig = {
+            apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+            authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+            projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+            storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+            messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+            appId: process.env.REACT_APP_APP_ID,
+            measurementId: process.env.REACT_APP_MEASUREMENT_ID,
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+    </script>
+    <script>
+
+        window.onload = function () {
+            if ("premium" == sessionStorage.getItem("userPayment")) {
+                document.getElementById("profile_li2").style.display = "block";
+                document.getElementById("profile_li3").style.display = "block";
+                document.getElementById("profile_li4").style.display = "block";
+
+            } else if ("basic" == sessionStorage.getItem("userPayment")) {
+                document.getElementById("profile_li2").style.display = "none";
+                document.getElementById("profile_li3").style.display = "none";
+                document.getElementById("profile_li4").style.display = "none";
+            }
+
+            const userArr = sessionStorage.getItem('userProfile').split(",");
+            for (var i = 0; i < userArr.length; i++) {
+                document.getElementById('span_user_profile' + (i + 1)).innerText = userArr[i];
+            }
+        }
+
+        function mainMove(index) {
+            sessionStorage.setItem("profileIndex", index);
+            window.location.href = "main.html";
+            alert("오브젝트를 방문해주셔서 감사합니다 :)\n영상재생화면 구현은 우리들의 블루스에서만 볼 수 있습니다!")
+        }
+
+        function mprofileMove(index) {
+            sessionStorage.setItem("profileIndex", index);
+            window.location.href = "manage_profile.html";
+        }
+
+
+
+    </script>
+</head>
+
+<body>
+    <form>
+        <div class="choice_profile">
+            <h2 class="choice_profile_header">프로필 선택</h2>
+            </header>
+            <ul class="profile">
+                <li id="profile_li1">
+                    <div class="profiledetail" onclick="mainMove(1)">
+                        <!-- <a href=""> -->
+                        <img src="img/pro1.jpg"><br>
+                        <span id="span_user_profile1"></span><br>
+                        <!-- </a> -->
+                    </div>
+                    <!-- <input type="button" class="btn_profile_chg"  value="프로필 수정" onclick="mprofileMove(1)"/> -->
+                </li>
+                <li id="profile_li2">
+                    <div class="profiledetail" onclick="mainMove(2)">
+                        <!-- <a href=""> -->
+                        <img src="img/pro2.jpg"><br>
+                        <span id="span_user_profile2"></span><br>
+                        <!-- </a> -->
+                    </div>
+                    <!-- <input type="button" class="btn_profile_chg" value="프로필 수정" onclick="mprofileMove(2)"/> -->
+                </li>
+                <li id="profile_li3">
+                    <div class="profiledetail" onclick="mainMove(3)">
+                        <!-- <a href=""> -->
+                        <img src="img/pro4.jpg"><br>
+                        <span id="span_user_profile3"></span><br>
+                        <!-- </a> -->
+                    </div>
+                    <!-- <input type="button" class="btn_profile_chg" value="프로필 수정" onclick="mprofileMove(3)"/> -->
+                </li>
+                <li id="profile_li4">
+                    <div class="profiledetail" onclick="mainMove(4)">
+                        <!-- <a href=""> -->
+                        <img src="img/pro3.jpg"><br>
+                        <span id="span_user_profile4"></span><br>
+                        <!-- </a> -->
+                    </div>
+                    <!-- <input type="button" class="btn_profile_chg" value="프로필 수정" onclick="mprofileMove(4)"/> -->
+                </li>
+            </ul>
+        </div>
+
+    </form>
+
+</body>
+
+</html>
