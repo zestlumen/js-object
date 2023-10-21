@@ -1,8 +1,23 @@
 # 영상 속 상품을 연결해주는 OTT서비스 웹 페이지, OBJECT v1
 ### Firebase V8로 국비학원에서 2명으로 진행한 팀 프로젝트
+![image](https://github.com/zestlumen/js-object/assets/122693004/7430093d-3671-44bd-8540-f22807315111)
 - 영상 속에 나오는 상품을 연결해주는 기존의 OTT서비스와의 차별화된 서비스
   ( 패션 상품, 여행 패키지, 체험 상품, 음식 등 )
-- JS, HTML/CSS, Firebase(Storage, Firestore, Auth, Google OAuth, Hosting)
+- JS, HTML/CSS, Firebase(Storage, Firestore, Auth, Hosting)
+  
+### 맡은 역할
+- 메인화면 및 디자인
+- 영상 상세정보 페이지
+- 재생 화면 상품 표시 및 연결 페이지
+- 회원 가입 및 로그인
+- 프로필 설정 및 회선선택
+- 계정설정 페이지
+- PPT 제작
+  
+### 시연 및 발표 영상 링크
+1. https://youtu.be/iB7JnEpSd2A
+2. https://youtu.be/0Z-ncofkgAk
+  
 ### 실행 화면
 - 로그인 전 메인화면 / 로그인 / 회원가입
 <img src="https://github.com/zestlumen/js-object/assets/122693004/4ced5807-e2c4-453e-8409-fa2025231df1"/>
